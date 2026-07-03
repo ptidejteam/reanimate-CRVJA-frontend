@@ -120,3 +120,5 @@ https://www.reddit.com/r/nextjs/comments/1kvo695/should_i_use_nextjs_with_a_sepa
 https://www.reddit.com/r/nextjs/comments/1ktvdbk/why_people_do_not_recommend_nextjs_for_backend/
 https://mattburgess.medium.com/the-problem-with-nextjs-e44fd4c99d20
 https://medium.com/@turingvang/nextjs-vs-expressjs-ffc679dcd77f
+
+- Testing deployment without GitHub Actions
