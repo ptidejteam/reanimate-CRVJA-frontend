@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import FileActionButton from "../ui/FileActionButton";
+import FileActionButton from "../ui/file-action-button";
 
 export default function SideNavigation({
   isSideMenuOpen,
@@ -131,6 +131,7 @@ export default function SideNavigation({
       action: () =>
         loadExample(
           "/reanimate26/ParkBedlam_Shifan_Franiczek_Ejaz_Scistri/park_bedlam_v20.asc",
+          // "/reanimate26/ParkBedlam_Shifan_Franiczek_Ejaz_Scistri/park_bedlam_v20 (Adapted to v2.0.0).asc",
           [
             {
               path: "/reanimate26/ParkBedlam_Shifan_Franiczek_Ejaz_Scistri/AleksBank.abk",
@@ -175,6 +176,7 @@ export default function SideNavigation({
       action: () =>
         loadExample(
           "/reanimate26/GalaxyPatrol_Tondorf_Chua_Zongo_Bijani/GalaxyPatrol_TCZB.asc",
+          // "/reanimate26/GalaxyPatrol_Tondorf_Chua_Zongo_Bijani/GalaxyPatrol_TCZB (Adapted to v2.0.0).asc",
           [
             {
               path: "/reanimate26/GalaxyPatrol_Tondorf_Chua_Zongo_Bijani/gjs.abk",

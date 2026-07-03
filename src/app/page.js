@@ -1,30 +1,20 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Sketch } from "@uiw/react-color";
-import AnalogClock from "@/src/app/components/ui/analogClock";
+import AnalogClock from "@/src/app/components/ui/analog-clock";
 import {
   WorkbenchIcon,
   WorkbenchShell,
   WorkbenchWindow,
 } from "@/src/app/components/ui/workbench";
-import TutorialPage from "@/src/app/components/tutorial/TutorialPage";
-import { useAMOSParser } from "@/src/app/hooks/useAmosParser";
-import { parseBankFile } from "@/src/utils/parseAmosBank";
-import { generateAmosBankFile } from "@/src/utils/generateAmosBank";
-import { renderSpritePixels } from "@/src/utils/spriteRenderer";
-import { useBankCreator } from "@/src/app/hooks/useBankCreator";
-import BankEditor from "@/src/app/components/bank/BankEditor";
-import { checkApiStatus } from "@/src/services/checkApiStatus";
-import CinaIDE from "@/src/app/components/cina/CinaIDE";
+import TutorialPage from "@/src/app/components/tutorial/tutorial-page";
+import { useBankCreator } from "@/src/app/hooks/use-bank-creator";
+import BankEditor from "@/src/app/components/bank/bank-editor";
+import CinaIDE from "@/src/app/components/cina/cina-ide";
 
 function App() {
   const [showCode, setShowCode] = useState(false);
-  const [option, setOption] = useState("file");
-  const [createBank, setCreateBank] = useState(false);
   const { bankCreator, setBankCreator, clearBank } = useBankCreator();
-  const [showRender, setShowRender] = useState(false);
   const [showSpriteEditor, setShowSpriteEditor] = useState(false);
-  const [showExamples, setShowExamples] = useState(false); // TODO: To remove?
   const [showClock, setShowClock] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState(null);

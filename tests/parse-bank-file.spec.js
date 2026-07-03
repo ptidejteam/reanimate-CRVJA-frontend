@@ -1,4 +1,4 @@
-import { parseBankFile } from "../src/utils/parseAmosBank";
+import { parseBankFile } from "../src/utils/parse-amos-bank";
 
 describe("parseBankFile", () => {
   test("fails when no file is provided", async () => {

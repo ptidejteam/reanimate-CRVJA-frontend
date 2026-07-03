@@ -115,10 +115,12 @@ ICONS CREDIT ATTRIBUTION
 
 ### Disadvantages of using Next.js as backend
 'Next.js supports the "Backend for Frontend" pattern.'
-https://nextjs.org/docs/app/guides/backend-for-frontend
-https://www.reddit.com/r/nextjs/comments/1kvo695/should_i_use_nextjs_with_a_separate_backend/
-https://www.reddit.com/r/nextjs/comments/1ktvdbk/why_people_do_not_recommend_nextjs_for_backend/
-https://mattburgess.medium.com/the-problem-with-nextjs-e44fd4c99d20
-https://medium.com/@turingvang/nextjs-vs-expressjs-ffc679dcd77f
+- https://nextjs.org/docs/app/guides/backend-for-frontend
+- https://www.reddit.com/r/nextjs/comments/1kvo695/should_i_use_nextjs_with_a_separate_backend/
+- https://www.reddit.com/r/nextjs/comments/1ktvdbk/why_people_do_not_recommend_nextjs_for_backend/
+- https://mattburgess.medium.com/the-problem-with-nextjs-e44fd4c99d20
+- https://medium.com/@turingvang/nextjs-vs-expressjs-ffc679dcd77f
 
-- Testing deployment without GitHub Actions
+### JavaScript naming conventions
+- https://dev.to/codewithluke/javascript-file-naming-conventions-1fn7
+- https://community.latenode.com/t/how-should-i-name-javascript-files/775/3

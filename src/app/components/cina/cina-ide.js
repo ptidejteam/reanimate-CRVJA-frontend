@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import AMOSDecoder from "@/src/utils/amosDecoder";
-import CodeEditor from "@/src/app/components/cina/CodeEditor";
-import ActionButton from "@/src/app/components/ui/ActionButton";
-import SideNavigation from "@/src/app/components/cina/SideNavigation";
-import { downloadASCFile } from "@/src/utils/fileHandler";
-import AmosRunner from "@/src/app/components/cina/AmosRunner";
-import BankSlotManager from "@/src/app/components/bank/BankSlotManager";
+import AMOSDecoder from "@/src/utils/amos-decoder";
+import CodeEditor from "@/src/app/components/cina/code-editor";
+import ActionButton from "@/src/app/components/ui/action-button";
+import SideNavigation from "@/src/app/components/cina/side-navigation";
+import { downloadASCFile } from "@/src/utils/file-handler";
+import AmosRunner from "@/src/app/components/cina/amos-runner";
+import BankSlotManager from "@/src/app/components/bank/bank-slot-manager";
 import { transpile } from "@/src/services/transpile";
-import VersionSelector from "@/src/app/components/cina/VersionSelector";
+import VersionSelector from "@/src/app/components/cina/version-selector";
 
 export default function CinaIDE({ onClose }) {
   const defaultTranspilerVersion = "2.0.0";
@@ -49,16 +49,15 @@ export default function CinaIDE({ onClose }) {
   };
 
   const clearBanks = () => {
-    while (bankFiles.length > 0) {
-      bankFiles.pop();
-    }
-    setBankFiles([...bankFiles]);
+    setBankFiles([]);
   };
 
   const handleBankChange = (index, file) => {
-    const newBankFiles = [...bankFiles];
-    newBankFiles[index] = file;
-    setBankFiles(newBankFiles);
+    setBankFiles((prevBankFiles) => {
+      const newBankFiles = [...prevBankFiles];
+      newBankFiles[index] = file;
+      return newBankFiles;
+    });
   };
 
   const onRunClick = () => {
@@ -81,7 +80,7 @@ export default function CinaIDE({ onClose }) {
       } = response.data;
 
       setTranslatedCode(resTranslatedCode);
-      console.log("transpilerVersion: ", transpilerVersion);
+      console.log("translatedCode: ", resTranslatedCode);
     } catch (error) {
       console.error("Failed to fetch API: ", error);
     }
