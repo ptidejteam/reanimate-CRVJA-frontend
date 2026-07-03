@@ -4,7 +4,7 @@ Welcome to CRVJA! This tutorial is designed for beginners who want to learn how 
 
 In this tutorial, you will learn the basics of setting up a screen, changing colors, printing text, and drawing shapes. You can test all the code examples by running CRVJA in your browser (usually at `https://crvja.reanimate.school/`), typing the code into the editor.
 
-![CRVJA Code Editor](./docs/crvja_editor.png)
+![CRVJA Code Editor](/docs/crvja_editor.png)
 
 ---
 
@@ -136,7 +136,7 @@ CRVJA includes a built-in sprite editor so you can draw your sprites directly in
 
 ### Anatomy of the Bank Editor
 
-![Sprites Editor](./docs/sprites_editor.png)
+![Sprites Editor](/docs/sprites_editor.png)
 
 #### A. The Palette (Left Column)
 * **Select active color**: Left-click any color box to set it as your current drawing color.
