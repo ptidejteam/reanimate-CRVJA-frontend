@@ -90,16 +90,7 @@ export default function SideNavigation({
           [],
           "/examples/Example4_Colourful_Text/crvja.txt"
         ),
-    },
-    {
-      label: "Text on V1",
-      action: () =>
-        loadExample(
-          "/examples/Example5_Text_V1/Example5_Text_V1.asc",
-          [],
-          "/examples/Example5_Text_V1/crvja.txt"
-        ),
-    },
+    }
   ];
 
   const reanimate26Examples = [
@@ -107,8 +98,8 @@ export default function SideNavigation({
       label: "Escape From Reanimate 🥇",
       action: () =>
         loadExample(
-          "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game.asc",
-          // "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game (Adapted to v2.0.0).asc",
+          // "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game.asc",
+          "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game (Adapted to v2.0.0).asc",
           [
             {
               path: "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/AmosBank_Escape1.abk",
@@ -157,7 +148,8 @@ export default function SideNavigation({
       label: "Welcome to the Backrooms 🥈",
       action: () =>
         loadExample(
-          "/reanimate26/Welcome_to_the_Backrooms_Politowski_Bigot_Serra_Lopez/Welcome_to_the_Backrooms.asc",
+          // "/reanimate26/Welcome_to_the_Backrooms_Politowski_Bigot_Serra_Lopez/Welcome_to_the_Backrooms.asc",
+          "/reanimate26/Welcome_to_the_Backrooms_Politowski_Bigot_Serra_Lopez/Welcome_to_the_Backrooms (Adapted to v2.0.0).asc",
           [
             {
               path: "/reanimate26/Welcome_to_the_Backrooms_Politowski_Bigot_Serra_Lopez/Sprite.abk",
