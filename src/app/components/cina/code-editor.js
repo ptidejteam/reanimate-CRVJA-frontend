@@ -213,7 +213,7 @@ export default function CodeEditor({
   };
 
   return (
-    <div className={className} style={wrapStyle}>
+    <div id="code-editor-container" className={className} style={wrapStyle}>
       {/* Overlay (no scroll; translated inner) */}
       <div
         style={overlayWrapStyle}

@@ -13,10 +13,8 @@ export default function SideNavigation({
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        if (!event.target.closest("#menu-toggle-btn") && setIsSideMenuOpen) {
-          setIsSideMenuOpen(false);
-        }
+      if (event.target.closest("#code-editor-container") && setIsSideMenuOpen) {
+        setIsSideMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -47,10 +45,7 @@ export default function SideNavigation({
       const text = await resAsc.text();
       setAmosCode(text);
 
-      // Close the side menu after loading
-      if (setIsSideMenuOpen) {
-        setIsSideMenuOpen(false);
-      }
+      // Do not close the side menu after loading, according to the "if, and only if" requirements.
     } catch (err) {
       console.error("Failed to load example:", err);
     }
@@ -113,6 +108,7 @@ export default function SideNavigation({
       action: () =>
         loadExample(
           "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game.asc",
+          // "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game (Adapted to v2.0.0).asc",
           [
             {
               path: "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/AmosBank_Escape1.abk",
