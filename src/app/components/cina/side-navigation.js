@@ -98,8 +98,8 @@ export default function SideNavigation({
       label: "Escape From Reanimate 🥇",
       action: () =>
         loadExample(
-          // "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game.asc",
-          "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game (Adapted to v2.0.0).asc",
+          "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game.asc",
+          // "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game (Adapted to v2.0.0).asc",
           [
             {
               path: "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/AmosBank_Escape1.abk",
