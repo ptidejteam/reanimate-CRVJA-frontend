@@ -106,5 +106,5 @@ For a comprehensive breakdown of the core components of the transpiler system, p
 The important commands are:
 - `npm run compile-grammar`
 - `npm run dev`
-- `npm run build
+- `npm run build`
 - `npm run start`
