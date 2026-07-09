@@ -9,13 +9,14 @@ import BankSlotManager from "@/src/app/components/bank/bank-slot-manager";
 import { transpile } from "@/src/services/transpile";
 import VersionSelector from "@/src/app/components/cina/version-selector";
 
-export default function CinaIDE({ onClose }) {
-  const defaultTranspilerVersion = "2.0.0";
+export default function CinaIDE(availableTranspilerVersions) {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(true);
   const [numBanks, setNumBanks] = useState(6);
   const [bankFiles, setBankFiles] = useState([]);
   const [AmosCode, setAmosCode] = useState("");
-  const [transpilerVersion, setTranspilerVersion] = useState(defaultTranspilerVersion);
+  const [transpilerVersion, setTranspilerVersion] = useState(
+    availableTranspilerVersions.availableTranspilerVersions[0],
+  );
   const fileInputRef = useRef();
   const amosFileInputRef = useRef();
   const amosDecoderRef = useRef();
@@ -32,9 +33,10 @@ export default function CinaIDE({ onClose }) {
   }, [translatedCode]);
 
   useEffect(() => {
-    console.log("Transpiler version changed to: ", transpilerVersion);
-    setTranspilerVersion(transpilerVersion);
-  }, [transpilerVersion]);
+    if (!transpilerVersion) {
+      setTranspilerVersion(availableTranspilerVersions.availableTranspilerVersions[0]);
+    }
+  }, [availableTranspilerVersions, transpilerVersion]);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -87,44 +89,144 @@ export default function CinaIDE({ onClose }) {
   };
 
   return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          width: "100%",
-          height: "100%",
-        }}
-      >
-        {isSideMenuOpen && (
-          <SideNavigation
-            clearBanks={clearBanks}
-            handleBankChange={handleBankChange}
-            setAmosCode={setAmosCode}
-            setIsSideMenuOpen={setIsSideMenuOpen}
-            setTranspilerVersion={setTranspilerVersion}
-          />
-        )}
-        <div style={{ width: "100%" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      {isSideMenuOpen && (
+        <SideNavigation
+          clearBanks={clearBanks}
+          handleBankChange={handleBankChange}
+          setAmosCode={setAmosCode}
+          setIsSideMenuOpen={setIsSideMenuOpen}
+          setTranspilerVersion={setTranspilerVersion}
+        />
+      )}
+      <div style={{ width: "100%" }}>
+        <div
+          style={{
+            display: "flex",
+            marginTop: "0px",
+            padding: "0px",
+          }}
+        >
           <div
             style={{
+              width: "100%",
               display: "flex",
-              marginTop: "0px",
-              padding: "0px",
+              flexDirection: "column",
             }}
           >
             <div
               style={{
                 width: "100%",
                 display: "flex",
-                flexDirection: "column",
+                flexDirection: "row",
+                height: "fit-content",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  marginBottom: "10px",
+                  gap: "10px",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <ActionButton
+                  id="menu-toggle-btn"
+                  icon="/icons/menu-button.png"
+                  onClick={() => setIsSideMenuOpen(!isSideMenuOpen)}
+                >
+                  Menu
+                </ActionButton>
+
+                <ActionButton
+                  icon="/icons/upload-button.png"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Load .ASC
+                </ActionButton>
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  style={{ display: "none" }}
+                  accept=".asc, .txt, .amo"
+                />
+
+                <ActionButton
+                  icon="/icons/upload-button.png"
+                  onClick={() => amosFileInputRef.current?.click()}
+                >
+                  Load .AMOS
+                </ActionButton>
+                <input
+                  type="file"
+                  ref={amosFileInputRef}
+                  onChange={(e) =>
+                    amosDecoderRef.current?.handleFile(e.target.files[0])
+                  }
+                  style={{ display: "none" }}
+                  accept=".amos,.AMOS"
+                />
+
+                <AMOSDecoder
+                  ref={amosDecoderRef}
+                  onDecoded={(text) => setDecodedText(text)}
+                />
+
+                <ActionButton
+                  icon="/icons/download-button.png"
+                  onClick={() => {
+                    const filename = "my_amos_code.asc";
+                    downloadASCFile(filename, AmosCode);
+                  }}
+                >
+                  Save .ASC
+                </ActionButton>
+
+                <ActionButton
+                  icon="/icons/play-button.png"
+                  onClick={handleTranspile}
+                >
+                  Run Code
+                </ActionButton>
+
+                <VersionSelector
+                  value={transpilerVersion}
+                  availableVersions={availableTranspilerVersions}
+                  onChange={setTranspilerVersion}
+                >
+                  Version
+                </VersionSelector>
+              </div>
+            </div>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "row",
+                height: "fit-content",
+                border: "1px solid black",
+                justifyContent: "space-between",
+                padding: "10px",
               }}
             >
               <div
                 style={{
                   width: "100%",
                   display: "flex",
-                  flexDirection: "row",
-                  height: "fit-content",
+                  flexDirection: "column",
+                  minHeight: "80vh",
+                  alignItems: "center",
                 }}
               >
                 <div
@@ -132,143 +234,47 @@ export default function CinaIDE({ onClose }) {
                     display: "flex",
                     flexDirection: "row",
                     marginBottom: "10px",
-                    gap: "10px",
-                    alignItems: "center",
-                    flexWrap: "wrap",
                   }}
                 >
-                  <ActionButton
-                    id="menu-toggle-btn"
-                    icon="/icons/menu-button.png"
-                    onClick={() => setIsSideMenuOpen(!isSideMenuOpen)}
-                  >
-                    Menu
-                  </ActionButton>
-
-                  <ActionButton
-                    icon="/icons/upload-button.png"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    Load .ASC
-                  </ActionButton>
-
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                    style={{ display: "none" }}
-                    accept=".asc, .txt, .amo"
-                  />
-
-                  <ActionButton
-                    icon="/icons/upload-button.png"
-                    onClick={() => amosFileInputRef.current?.click()}
-                  >
-                    Load .AMOS
-                  </ActionButton>
-                  <input
-                    type="file"
-                    ref={amosFileInputRef}
-                    onChange={(e) =>
-                      amosDecoderRef.current?.handleFile(e.target.files[0])
-                    }
-                    style={{ display: "none" }}
-                    accept=".amos,.AMOS"
-                  />
-
-                  <AMOSDecoder
-                    ref={amosDecoderRef}
-                    onDecoded={(text) => setDecodedText(text)}
-                  />
-
-                  <ActionButton
-                    icon="/icons/download-button.png"
-                    onClick={() => {
-                      const filename = "my_amos_code.asc";
-                      downloadASCFile(filename, AmosCode);
-                    }}
-                  >
-                    Save .ASC
-                  </ActionButton>
-
-                  <ActionButton icon="/icons/play-button.png" onClick={handleTranspile}>
-                    Run Code
-                  </ActionButton>
-
-                  <VersionSelector 
-                    value={transpilerVersion}
-                    onChange={setTranspilerVersion}
-                  >
-                    Version
-                  </VersionSelector>
+                  <label htmlFor="amos-code"> Code Editor </label>
                 </div>
+                <CodeEditor
+                  value={AmosCode}
+                  onChange={setAmosCode}
+                  style={{
+                    width: "44vw",
+                    height: "100%",
+                    margin: "0px",
+                  }}
+                />
               </div>
               <div
                 style={{
                   width: "100%",
                   display: "flex",
-                  flexDirection: "row",
-                  height: "fit-content",
-                  border: "1px solid black",
-                  justifyContent: "space-between",
-                  padding: "10px",
+                  flexDirection: "column",
+                  maxHeight: "fit-content",
+                  alignItems: "center",
+                  marginBottom: "100px",
                 }}
               >
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    minHeight: "80vh",
-                    alignItems: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    <label htmlFor="amos-code"> Code Editor </label>
-                  </div>
-                  <CodeEditor
-                    value={AmosCode}
-                    onChange={setAmosCode}
-                    style={{
-                      width: "44vw",
-                      height: "100%",
-                      margin: "0px",
-                    }}
-                  />
-                </div>
-                <div
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    maxHeight: "fit-content",
-                    alignItems: "center",
-                    marginBottom: "100px",
-                  }}
-                >
-                  <label htmlFor="amos-code"> Program Screen </label>
-                  <AmosRunner
-                    jsCode={translatedCode}
-                    runNonce={runNonce}
-                    bankFiles={bankFiles}
-                  />
-                </div>
+                <label htmlFor="amos-code"> Program Screen </label>
+                <AmosRunner
+                  jsCode={translatedCode}
+                  runNonce={runNonce}
+                  bankFiles={bankFiles}
+                />
               </div>
-              &nbsp;
-              <BankSlotManager
-                numBanks={numBanks}
-                bankFiles={bankFiles}
-                onFileChange={handleBankChange}
-              />
             </div>
+            &nbsp;
+            <BankSlotManager
+              numBanks={numBanks}
+              bankFiles={bankFiles}
+              onFileChange={handleBankChange}
+            />
           </div>
         </div>
       </div>
+    </div>
   );
 }

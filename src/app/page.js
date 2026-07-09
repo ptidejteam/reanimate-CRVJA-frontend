@@ -10,6 +10,7 @@ import TutorialPage from "@/src/app/components/tutorial/tutorial-page";
 import { useBankCreator } from "@/src/app/hooks/use-bank-creator";
 import BankEditor from "@/src/app/components/bank/bank-editor";
 import CinaIDE from "@/src/app/components/cina/cina-ide";
+import { fetchTranspilerVersions } from "@/src/services/fetch-transpiler-versions";
 
 function App() {
   const [showCode, setShowCode] = useState(false);
@@ -18,6 +19,22 @@ function App() {
   const [showClock, setShowClock] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState(null);
+  const [availableTranspilerVersions, setAvailableTranspilerVersions] =
+    useState([]);
+
+  useEffect(() => {
+    handleFetchVersions();
+  }, []);
+
+  const handleFetchVersions = async () => {
+    try {
+      const response = await fetchTranspilerVersions();
+
+      setAvailableTranspilerVersions(response.versions);
+    } catch (error) {
+      console.error("Failed to fetch API: ", error);
+    }
+  };
 
   return (
     <WorkbenchShell>
@@ -37,7 +54,10 @@ function App() {
           id="cina"
           label="CINA"
           icon="/icons/cina.png"
-          onOpen={() => setShowCode(true)}
+          onOpen={() => {
+            handleFetchVersions();
+            setShowCode(true);
+          }}
           selected={selectedIcon === "cina"}
           setSelectedIcon={setSelectedIcon}
         />{" "}
@@ -77,7 +97,7 @@ function App() {
       {/* Windows */}
       {showCode && (
         <WorkbenchWindow title="CINA IDE" onClose={() => setShowCode(false)}>
-          <CinaIDE />
+          <CinaIDE availableTranspilerVersions={availableTranspilerVersions}/>
         </WorkbenchWindow>
       )}
 

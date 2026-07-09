@@ -1,15 +1,17 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, version } from "react";
 
 export default function VersionSelector({
   children,
   value,
+  availableVersions,
   onChange,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const versions = availableVersions.availableTranspilerVersions;
 
-  const versions = ["2.0.0", "1.1.0"];
+  // const versions = Object.values(availableVersions);
 
   const toggleVersionSelector = () => {
     setIsOpen(!isOpen);
