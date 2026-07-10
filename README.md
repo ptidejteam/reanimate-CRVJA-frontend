@@ -1,4 +1,4 @@
-# Reanimate-CRVJA
+# Reanimate-CRVJA-frontend
 
 Reanimate-CRVJA is a web-based environment that brings retro Amiga AMOS BASIC games and applications to the modern web. It provides an Amiga Workbench-styled UI where users can load, edit, and run AMOS code.
 
