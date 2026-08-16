@@ -1,71 +1,71 @@
-"use client";
-import React, { useEffect, useRef } from "react";
+'use client';
+import React, { useEffect, useRef } from 'react';
 
 export default function AmosRunner({ jsCode, runNonce, bankFiles }) {
   const bankFilesRef = useRef(bankFiles);
-  
+
   useEffect(() => {
     bankFilesRef.current = bankFiles;
   }, [bankFiles]);
   // Put as full screen toggle on Shift+F1, since F11 is often taken by browsers and you might want an easy way to go fullscreen without it
   useEffect(() => {
-  const handleKeyDown = async (event) => {
-    if (event.shiftKey && event.key === 'F1') {
-      event.preventDefault();
-      event.stopPropagation();
+    const handleKeyDown = async (event) => {
+      if (event.shiftKey && event.key === 'F1') {
+        event.preventDefault();
+        event.stopPropagation();
 
-      const gameContainer = document.getElementById('game-container');
+        const gameContainer = document.getElementById('game-container');
 
-      if (!gameContainer) return;
+        if (!gameContainer) return;
 
-      try {
-        if (!document.fullscreenElement) {
-          await gameContainer.requestFullscreen();
-        } else {
-          await document.exitFullscreen();
+        try {
+          if (!document.fullscreenElement) {
+            await gameContainer.requestFullscreen();
+          } else {
+            await document.exitFullscreen();
+          }
+        } catch (error) {
+          console.error('Fullscreen error:', error);
         }
-      } catch (error) {
-        console.error('Fullscreen error:', error);
       }
-    }
-  };
+    };
 
-  window.addEventListener('keydown', handleKeyDown, true);
+    window.addEventListener('keydown', handleKeyDown, true);
 
-  return () => {
-    window.removeEventListener('keydown', handleKeyDown, true);
-  };
-}, []);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown, true);
+    };
+  }, []);
 
   useEffect(() => {
     if (!jsCode) return;
 
-    const host = document.getElementById("game-container");
+    const host = document.getElementById('game-container');
     if (!host) {
       console.error('AMOS runner: host "#game-container" not found.');
       return;
     }
-    console.log("[parent] AMOS runner: host found, injecting iframe…");
+    console.log('[parent] AMOS runner: host found, injecting iframe…');
     host.replaceChildren();
 
     const token = Math.random().toString(36).slice(2);
 
-    const iframe = document.createElement("iframe");
-    iframe.setAttribute("sandbox", "allow-scripts allow-same-origin");
-    iframe.style.border = "0";
-    iframe.style.display = "block";
-    iframe.style.width = "640px"; // initial; iframe will resize itself
-    iframe.style.height = "480px";
-    iframe.style.marginTop = "10px";
-    host.style.display = "inline-block";
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+    iframe.style.border = '0';
+    iframe.style.display = 'block';
+    iframe.style.width = '640px'; // initial; iframe will resize itself
+    iframe.style.height = '480px';
+    iframe.style.marginTop = '10px';
+    host.style.display = 'inline-block';
 
     // ---- PLAIN JS selector; find the bank file inputs in the PARENT ----
     const forwardBanks = async () => {
       // 1) existing: from real <input type="file">
       const inputs = Array.from(
         document.querySelectorAll(
-          'input[type="file"][id^="bankStored"], input[type="file"][id^="Creator_bankStored"]'
-        )
+          'input[type="file"][id^="bankStored"], input[type="file"][id^="Creator_bankStored"]',
+        ),
       );
 
       for (const input of inputs) {
@@ -73,18 +73,18 @@ export default function AmosRunner({ jsCode, runNonce, bankFiles }) {
         if (!file) continue;
         const buffer = await file.arrayBuffer();
         const m = input.id.match(/(\d+)$/);
-        const bankId = m ? m[1] : "";
+        const bankId = m ? m[1] : '';
         iframe.contentWindow?.postMessage(
           {
-            type: "amos-bank",
+            type: 'amos-bank',
             token,
             bankId,
             name: file.name,
-            mime: file.type || "application/octet-stream",
+            mime: file.type || 'application/octet-stream',
             buffer,
           },
-          "*",
-          [buffer]
+          '*',
+          [buffer],
         );
       }
 
@@ -96,44 +96,40 @@ export default function AmosRunner({ jsCode, runNonce, bankFiles }) {
         const buffer = await f.arrayBuffer();
         iframe.contentWindow?.postMessage(
           {
-            type: "amos-bank",
+            type: 'amos-bank',
             token,
-            bankId: String(i + 1),      // banks are 1-based in your IDs
+            bankId: String(i + 1), // banks are 1-based in your IDs
             name: f.name,
-            mime: f.type || "application/octet-stream",
+            mime: f.type || 'application/octet-stream',
             buffer,
           },
-          "*",
-          [buffer]
+          '*',
+          [buffer],
         );
       }
     };
-
 
     const onMessage = (e) => {
       const data = e.data || {};
       if (data.token !== token) return;
 
-      if (data.type === "amos-size") {
+      if (data.type === 'amos-size') {
         iframe.style.width = `${Math.max(1, Math.round(data.width))}px`;
         iframe.style.height = `${Math.max(1, Math.round(data.height))}px`;
         iframe.style.height = `${Math.max(1, Math.round(data.height))}px`;
       }
 
-      if (data.type === "amos-ready") {
+      if (data.type === 'amos-ready') {
         Promise.resolve()
           .then(forwardBanks) // run on next tick to be safe
           .then(() => {
             console.log("[parent] banks forwarded, telling iframe we're done");
             iframe.contentWindow &&
-              iframe.contentWindow.postMessage(
-                { type: "amos-banks-done", token },
-                "*"
-              );
+              iframe.contentWindow.postMessage({ type: 'amos-banks-done', token }, '*');
           });
       }
     };
-    window.addEventListener("message", onMessage);
+    window.addEventListener('message', onMessage);
 
     const FONT_CSS = `
 @font-face { font-family: 'Amiga4Ever';
@@ -287,19 +283,17 @@ html, body, #game-container, #amos-screen, * { font-family: 'Amiga4Ever', sans-s
     const changeHandler = () => forwardBanks();
     const bankInputs = Array.from(
       document.querySelectorAll(
-        'input[type="file"][id^="bankStored"], input[type="file"][id^="Creator_bankStored"]'
-      )
+        'input[type="file"][id^="bankStored"], input[type="file"][id^="Creator_bankStored"]',
+      ),
     );
-    bankInputs.forEach((el) => el.addEventListener("change", changeHandler));
+    bankInputs.forEach((el) => el.addEventListener('change', changeHandler));
 
     return () => {
-      window.removeEventListener("message", onMessage);
-      bankInputs.forEach((el) =>
-        el.removeEventListener("change", changeHandler)
-      );
+      window.removeEventListener('message', onMessage);
+      bankInputs.forEach((el) => el.removeEventListener('change', changeHandler));
       try {
         iframe.remove();
-      } catch { }
+      } catch {}
     };
   }, [jsCode, runNonce]);
 

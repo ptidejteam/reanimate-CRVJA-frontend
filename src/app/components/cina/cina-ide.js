@@ -1,27 +1,27 @@
-import React, { useEffect, useRef, useState } from "react";
-import AMOSDecoder from "@/src/utils/amos-decoder";
-import CodeEditor from "@/src/app/components/cina/code-editor";
-import ActionButton from "@/src/app/components/ui/action-button";
-import SideNavigation from "@/src/app/components/cina/side-navigation";
-import { downloadASCFile } from "@/src/utils/file-handler";
-import AmosRunner from "@/src/app/components/cina/amos-runner";
-import BankSlotManager from "@/src/app/components/bank/bank-slot-manager";
-import { transpile } from "@/src/services/transpile";
-import VersionSelector from "@/src/app/components/cina/version-selector";
+import React, { useEffect, useRef, useState } from 'react';
+import AMOSDecoder from '@/src/utils/amos-decoder';
+import CodeEditor from '@/src/app/components/cina/code-editor';
+import ActionButton from '@/src/app/components/ui/action-button';
+import SideNavigation from '@/src/app/components/cina/side-navigation';
+import { downloadASCFile } from '@/src/utils/file-handler';
+import AmosRunner from '@/src/app/components/cina/amos-runner';
+import BankSlotManager from '@/src/app/components/bank/bank-slot-manager';
+import { transpile } from '@/src/services/transpile';
+import VersionSelector from '@/src/app/components/cina/version-selector';
 
 export default function CinaIDE(availableTranspilerVersions) {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(true);
   const [numBanks, setNumBanks] = useState(6);
   const [bankFiles, setBankFiles] = useState([]);
-  const [AmosCode, setAmosCode] = useState("");
+  const [AmosCode, setAmosCode] = useState('');
   const [transpilerVersion, setTranspilerVersion] = useState(
     availableTranspilerVersions.availableTranspilerVersions[0],
   );
   const fileInputRef = useRef();
   const amosFileInputRef = useRef();
   const amosDecoderRef = useRef();
-  const [decodedText, setDecodedText] = useState("");
-  const [translatedCode, setTranslatedCode] = useState("");
+  const [decodedText, setDecodedText] = useState('');
+  const [translatedCode, setTranslatedCode] = useState('');
   const [runNonce, setRunNonce] = useState(0);
 
   useEffect(() => {
@@ -75,26 +75,24 @@ export default function CinaIDE(availableTranspilerVersions) {
 
       const response = await transpile(body);
 
-      const {
-        lexicalErrors,
-        syntaxErrors,
-        translatedCode: resTranslatedCode,
-      } = response.data;
+      const { lexicalErrors, syntaxErrors, translatedCode: resTranslatedCode } = response.data;
 
       setTranslatedCode(resTranslatedCode);
-      console.log("translatedCode: ", resTranslatedCode);
+      console.log('translatedCode: ', resTranslatedCode);
     } catch (error) {
-      console.error("Failed to fetch API: ", error);
+      console.error('Failed to fetch API: ', error);
     }
   };
 
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "row",
-        width: "100%",
-        height: "100%",
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        height: '100%',
+        maxHeight: '100%',
+        overflow: 'hidden',
       }}
     >
       {isSideMenuOpen && (
@@ -106,37 +104,37 @@ export default function CinaIDE(availableTranspilerVersions) {
           setTranspilerVersion={setTranspilerVersion}
         />
       )}
-      <div style={{ width: "100%" }}>
+      <div style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
         <div
           style={{
-            display: "flex",
-            marginTop: "0px",
-            padding: "0px",
+            display: 'flex',
+            marginTop: '0px',
+            padding: '0px',
           }}
         >
           <div
             style={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             <div
               style={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "row",
-                height: "fit-content",
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'row',
+                height: 'fit-content',
               }}
             >
               <div
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  marginBottom: "10px",
-                  gap: "10px",
-                  alignItems: "center",
-                  flexWrap: "wrap",
+                  display: 'flex',
+                  flexDirection: 'row',
+                  marginBottom: '10px',
+                  gap: '10px',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
                 }}
               >
                 <ActionButton
@@ -158,7 +156,7 @@ export default function CinaIDE(availableTranspilerVersions) {
                   type="file"
                   ref={fileInputRef}
                   onChange={handleFileUpload}
-                  style={{ display: "none" }}
+                  style={{ display: 'none' }}
                   accept=".asc, .txt, .amo"
                 />
 
@@ -171,32 +169,24 @@ export default function CinaIDE(availableTranspilerVersions) {
                 <input
                   type="file"
                   ref={amosFileInputRef}
-                  onChange={(e) =>
-                    amosDecoderRef.current?.handleFile(e.target.files[0])
-                  }
-                  style={{ display: "none" }}
+                  onChange={(e) => amosDecoderRef.current?.handleFile(e.target.files[0])}
+                  style={{ display: 'none' }}
                   accept=".amos,.AMOS"
                 />
 
-                <AMOSDecoder
-                  ref={amosDecoderRef}
-                  onDecoded={(text) => setDecodedText(text)}
-                />
+                <AMOSDecoder ref={amosDecoderRef} onDecoded={(text) => setDecodedText(text)} />
 
                 <ActionButton
                   icon="/icons/download-button.png"
                   onClick={() => {
-                    const filename = "my_amos_code.asc";
+                    const filename = 'my_amos_code.asc';
                     downloadASCFile(filename, AmosCode);
                   }}
                 >
                   Save .ASC
                 </ActionButton>
 
-                <ActionButton
-                  icon="/icons/play-button.png"
-                  onClick={handleTranspile}
-                >
+                <ActionButton icon="/icons/play-button.png" onClick={handleTranspile}>
                   Run Code
                 </ActionButton>
 
@@ -211,29 +201,29 @@ export default function CinaIDE(availableTranspilerVersions) {
             </div>
             <div
               style={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "row",
-                height: "fit-content",
-                border: "1px solid black",
-                justifyContent: "space-between",
-                padding: "10px",
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'row',
+                height: 'fit-content',
+                border: '1px solid black',
+                justifyContent: 'space-between',
+                padding: '10px',
               }}
             >
               <div
                 style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  minHeight: "80vh",
-                  alignItems: "center",
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  minHeight: '80vh',
+                  alignItems: 'center',
                 }}
               >
                 <div
                   style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    marginBottom: "10px",
+                    display: 'flex',
+                    flexDirection: 'row',
+                    marginBottom: '10px',
                   }}
                 >
                   <label htmlFor="amos-code"> Code Editor </label>
@@ -242,28 +232,24 @@ export default function CinaIDE(availableTranspilerVersions) {
                   value={AmosCode}
                   onChange={setAmosCode}
                   style={{
-                    width: "44vw",
-                    height: "100%",
-                    margin: "0px",
+                    width: '44vw',
+                    height: '100%',
+                    margin: '0px',
                   }}
                 />
               </div>
               <div
                 style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  maxHeight: "fit-content",
-                  alignItems: "center",
-                  marginBottom: "100px",
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  maxHeight: 'fit-content',
+                  alignItems: 'center',
+                  marginBottom: '100px',
                 }}
               >
                 <label htmlFor="amos-code"> Program Screen </label>
-                <AmosRunner
-                  jsCode={translatedCode}
-                  runNonce={runNonce}
-                  bankFiles={bankFiles}
-                />
+                <AmosRunner jsCode={translatedCode} runNonce={runNonce} bankFiles={bankFiles} />
               </div>
             </div>
             &nbsp;

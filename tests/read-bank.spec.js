@@ -1,13 +1,13 @@
-test("readBank", async () => {
-  const fs = require("fs");
+test('readBank', async () => {
+  const fs = require('fs');
 
   let dataRead;
   let numberExpected = 0;
   let objectsArray = [];
 
-  fs.readFile("./tests/fixtures/banks/AmosBank_test.abk", (err, data) => {
+  fs.readFile('./tests/fixtures/banks/AmosBank_test.abk', (err, data) => {
     if (err) {
-      console.error("Error reading file:", err);
+      console.error('Error reading file:', err);
       return;
     }
 
@@ -18,7 +18,7 @@ test("readBank", async () => {
     let byte2 = data[2];
     let byte3 = data[3];
     if (byte0 == 0x41 && byte1 == 0x6d && byte2 == 0x49 && byte3 == 0x63) {
-      console.log("The file is a valid ABK file");
+      console.log('The file is a valid ABK file');
     }
 
     let byte4 = data[4];
@@ -53,7 +53,7 @@ test("readBank", async () => {
       }
 
       colorPalette = colorPalette.map(
-        (color) => `0x${color.toString(16).padStart(4, "0").toUpperCase()}`,
+        (color) => `0x${color.toString(16).padStart(4, '0').toUpperCase()}`,
       );
 
       const objectBuilder = {
@@ -69,12 +69,9 @@ test("readBank", async () => {
       objectsArray.push(objectBuilder);
     }
 
-    console.log("How many sprites: ", objectsArray.length);
-    console.log("Array of sprites: ", objectsArray);
-    console.log(
-      "Data being read: ",
-      dataRead.toString("hex").replace(/(.)(.)/g, "$1$2 "),
-    );
+    console.log('How many sprites: ', objectsArray.length);
+    console.log('Array of sprites: ', objectsArray);
+    console.log('Data being read: ', dataRead.toString('hex').replace(/(.)(.)/g, '$1$2 '));
   });
 
   await new Promise((resolve) => setTimeout(resolve, 1000));

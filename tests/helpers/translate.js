@@ -1,8 +1,8 @@
-import antlr4 from "antlr4";
-import AmosToJavaScriptTranslator from "@/src/transpiler/AmosTranspiler";
-import AMOSParser from "@/src/grammar/generated/AMOSParser";
-import AMOSLexer from "@/src/grammar/generated/AMOSLexer";
-import CollectingErrorListener from "@/src/transpiler/ErrorListener";
+import antlr4 from 'antlr4';
+import AmosToJavaScriptTranslator from '@/src/transpiler/AmosTranspiler';
+import AMOSParser from '@/src/grammar/generated/AMOSParser';
+import AMOSLexer from '@/src/grammar/generated/AMOSLexer';
+import CollectingErrorListener from '@/src/transpiler/ErrorListener';
 
 /**
  * Helper to translate AMOS BASIC code into JavaScript.
@@ -29,7 +29,6 @@ export function translateAmos(amosBasicCode) {
   const translator = new AmosToJavaScriptTranslator();
   const walker = new antlr4.tree.ParseTreeWalker();
   walker.walk(translator, tree);
-
 
   const translatedJS = translator.getJavaScript();
   return [lexErr, parseErr, translatedJS];

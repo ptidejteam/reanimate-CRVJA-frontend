@@ -1,8 +1,7 @@
 // amosCStyle.js
 // ---------------- utils ----------------
 export const be16 = (b, i) => (b[i] << 8) | b[i + 1];
-export const be32 = (b, i) =>
-  (b[i] << 24) | (b[i + 1] << 16) | (b[i + 2] << 8) | b[i + 3];
+export const be32 = (b, i) => (b[i] << 24) | (b[i + 1] << 16) | (b[i + 2] << 8) | b[i + 3];
 
 const exp2 = (x) => Math.pow(2, x);
 
@@ -36,8 +35,8 @@ export class TokenTable {
   set(key, typeChar, text) {
     // text includes the printed keyword (capitalized by the C), typeChar controls spacing/parens handling
     this.map.set(key >>> 0, {
-      type: String(typeChar || "I"),
-      name: text || "",
+      type: String(typeChar || 'I'),
+      name: text || '',
     });
   }
   get(key) {
@@ -46,19 +45,9 @@ export class TokenTable {
 }
 
 // ---------------- parse extension ----------------
-export function parseExtensionToTable(
-  u8,
-  slot,
-  start /* usually 6 */,
-  table /* TokenTable */,
-) {
+export function parseExtensionToTable(u8, slot, start /* usually 6 */, table /* TokenTable */) {
   // Minimal validation: Amiga Hunk header (0x000003F3) & one code hunk (0x000003E9)
-  if (
-    u8.length < 54 ||
-    be32(u8, 0) !== 0x000003f3 ||
-    be32(u8, 24) !== 0x000003e9
-  )
-    return false;
+  if (u8.length < 54 || be32(u8, 0) !== 0x000003f3 || be32(u8, 24) !== 0x000003e9) return false;
 
   // Compute token-table offset like the C: tkoff = codeSize + 32 + 18 (+4 if "AP20" present)
   let tkoff = be32(u8, 32) + 32 + 18;
@@ -77,7 +66,7 @@ export function parseExtensionToTable(
       nameBytes = lastName;
     }
     // Copy & “capitalize first letter of words” like C does
-    let s = "";
+    let s = '';
     for (let i = 0; i < nameBytes.length; i++) {
       let c = nameBytes[i];
       if (c & 0x80) {
@@ -95,7 +84,7 @@ export function parseExtensionToTable(
       }
     }
     // If trailing space → switch type to 'I' (C replaces trailing space with virtual)
-    if (s.endsWith(" ")) {
+    if (s.endsWith(' ')) {
       s = s.slice(0, -1);
       typeByte = 0x49; // 'I'
     }
@@ -174,7 +163,7 @@ export function decryptProcedureInPlace(
 
 // ---------------- source printer ----------------
 export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
-  let out = "";
+  let out = '';
   let inpos = 0;
   let compiledLen = 0;
 
@@ -200,7 +189,7 @@ export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
 
     // indent
     const indent = line[1];
-    if (indent > 1) out += " ".repeat(indent - 1);
+    if (indent > 1) out += ' '.repeat(indent - 1);
 
     // decode this line
     let p = 2;
@@ -220,7 +209,7 @@ export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
 
       // ----- variable/label/proc/label_ref (<= 0x0018)
       if (token <= 0x0018) {
-        if (addSpace) out += " ";
+        if (addSpace) out += ' ';
         const nameLen = line[p + 2];
         const flags = line[p + 3];
         // print ASCII (uppercased like C)
@@ -232,12 +221,12 @@ export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
         if (token === 0x000c) {
           // label: add ":" unless it's a numeric label (line number)
           const first = line[p + 4];
-          if (!(first >= 48 && first <= 57)) out += ":";
+          if (!(first >= 48 && first <= 57)) out += ':';
           addSpace = 1;
           labelAtEol = 1;
         } else {
-          if (flags & 0x01) out += "#";
-          else if (flags & 0x02) out += "$";
+          if (flags & 0x01) out += '#';
+          else if (flags & 0x02) out += '$';
           addSpace = 0;
         }
         // advance: 2 unknown + 1 len + 1 flags + padded name
@@ -249,14 +238,14 @@ export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
       // ----- constants (0x0019..0x004D) and 0x2B6A
       if (token < 0x004e || token === 0x2b6a) {
         if (addSpace) {
-          out += " ";
+          out += ' ';
           addSpace = 0;
         }
         switch (token) {
           case 0x001e: {
             // TkBin
             const v = be32(line, p) >>> 0;
-            out += "%" + v.toString(2);
+            out += '%' + v.toString(2);
             p += 4;
             break;
           }
@@ -264,9 +253,7 @@ export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
             // TkCh1 — double quoted
             const len = be16(line, p);
             const padded = (len + 1) & ~1;
-            const s = new TextDecoder("latin1").decode(
-              line.subarray(p + 2, p + 2 + len),
-            );
+            const s = new TextDecoder('latin1').decode(line.subarray(p + 2, p + 2 + len));
             out += `"${s}"`;
             p += 2 + padded;
             break;
@@ -275,9 +262,7 @@ export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
             // TkCh2 — single quoted
             const len = be16(line, p);
             const padded = (len + 1) & ~1;
-            const s = new TextDecoder("latin1").decode(
-              line.subarray(p + 4 - 2, p + 4 - 2 + len),
-            ); // same as above but token layout differs by 2? keep consistent with your parser if needed
+            const s = new TextDecoder('latin1').decode(line.subarray(p + 4 - 2, p + 4 - 2 + len)); // same as above but token layout differs by 2? keep consistent with your parser if needed
             out += `'${s}'`;
             p += 2 + padded;
             break;
@@ -285,7 +270,7 @@ export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
           case 0x0036: {
             // TkHex
             const v = be32(line, p) >>> 0;
-            out += "$" + v.toString(16).toUpperCase();
+            out += '$' + v.toString(16).toUpperCase();
             p += 4;
             break;
           }
@@ -308,7 +293,7 @@ export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
             break;
           }
           default:
-            out += `Illegal_Constant_${token.toString(16).padStart(4, "0")}`;
+            out += `Illegal_Constant_${token.toString(16).padStart(4, '0')}`;
         }
         continue;
       }
@@ -329,22 +314,17 @@ export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
       if (entry) {
         const { type, name } = entry;
         const isParen = token === 0x0074;
-        const isFunc =
-          type === "O" ||
-          type === "0" ||
-          type === "1" ||
-          type === "2" ||
-          type === "V";
+        const isFunc = type === 'O' || type === '0' || type === '1' || type === '2' || type === 'V';
 
         if (!isFunc && !startOfLine) addSpace = 1;
-        if (!isParen && addSpace && name[0] !== " ") out += " ";
+        if (!isParen && addSpace && name[0] !== ' ') out += ' ';
         out += name;
-        addSpace = type === "I"; // like C: 'I' means virtual trailing space
+        addSpace = type === 'I'; // like C: 'I' means virtual trailing space
       } else {
         // unknown token → print placeholder
         const ext = key >>> 16;
         const off = key & 0xffff;
-        out += ` Extension_${ext}_${off.toString(16).padStart(4, "0")}`;
+        out += ` Extension_${ext}_${off.toString(16).padStart(4, '0')}`;
         addSpace = 1;
       }
 
@@ -354,9 +334,7 @@ export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
         case 0x0652: {
           // TkRem2
           const len = line[p + 1];
-          const text = new TextDecoder("latin1").decode(
-            line.subarray(p + 2, p + 2 + len),
-          );
+          const text = new TextDecoder('latin1').decode(line.subarray(p + 2, p + 2 + len));
           out += text;
           p += 2 + len + (len & 1 ? 1 : 0);
           break;
@@ -405,8 +383,8 @@ export function printAMOSSource(code /* Uint8Array */, table /* TokenTable */) {
       startOfLine = 0;
     }
 
-    if (addSpace && !labelAtEol) out += " ";
-    out += "\n";
+    if (addSpace && !labelAtEol) out += ' ';
+    out += '\n';
   }
 
   return out;

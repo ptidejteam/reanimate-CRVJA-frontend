@@ -1,5 +1,5 @@
-"use client";
-import React, { useEffect, useRef } from "react";
+'use client';
+import React, { useEffect, useRef } from 'react';
 
 export default function AnalogClock() {
   const canvasRef = useRef(null);
@@ -7,7 +7,7 @@ export default function AnalogClock() {
   useEffect(() => {
     function drawClock() {
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext('2d');
       const w = 200;
       const h = 200;
       const r = 90;
@@ -15,7 +15,7 @@ export default function AnalogClock() {
 
       ctx.beginPath();
       ctx.arc(w / 2, h / 2, r, 0, Math.PI * 2);
-      ctx.strokeStyle = "black";
+      ctx.strokeStyle = 'black';
       ctx.lineWidth = 4;
       ctx.stroke();
 
@@ -54,7 +54,7 @@ export default function AnalogClock() {
       ctx.save();
       ctx.translate(w / 2, h / 2);
       ctx.rotate(secAngle);
-      ctx.strokeStyle = "red";
+      ctx.strokeStyle = 'red';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(0, 20);

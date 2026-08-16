@@ -1,7 +1,7 @@
 export async function parseBankFile(file) {
   return new Promise((resolve, reject) => {
     if (!file) {
-      reject(new Error("No file was selected"));
+      reject(new Error('No file was selected'));
       return;
     }
     const reader = new FileReader();
@@ -9,15 +9,19 @@ export async function parseBankFile(file) {
     reader.onload = function (e) {
       const arrayBuffer = e.target.result; // The result is now an ArrayBuffer
       const buffer = new Uint8Array(arrayBuffer); // Convert to Uint8Array for easier byte manipulation
-      
+
       if (buffer.length < 6) {
-        reject(new Error("Invalid bank file: File is too small to contain a header."));
+        reject(new Error('Invalid bank file: File is too small to contain a header.'));
         return;
       }
 
       const header = String.fromCharCode(buffer[0], buffer[1], buffer[2], buffer[3]);
-      if (header !== "AmSp" && header !== "AmIc") {
-        reject(new Error(`Invalid bank file format: "${header}". Expected a Sprite bank (AmSp) or Icon bank (AmIc).`));
+      if (header !== 'AmSp' && header !== 'AmIc') {
+        reject(
+          new Error(
+            `Invalid bank file format: "${header}". Expected a Sprite bank (AmSp) or Icon bank (AmIc).`,
+          ),
+        );
         return;
       }
 
@@ -28,7 +32,11 @@ export async function parseBankFile(file) {
 
       for (let i = 0; i < numberExpected; i++) {
         if (offset + 10 > buffer.length) {
-          reject(new Error(`Corrupted bank file: Unexpected end of file while reading header for sprite/icon ${i + 1}.`));
+          reject(
+            new Error(
+              `Corrupted bank file: Unexpected end of file while reading header for sprite/icon ${i + 1}.`,
+            ),
+          );
           return;
         }
 
@@ -40,14 +48,22 @@ export async function parseBankFile(file) {
 
         // Sanity check dimensions to prevent malicious/corrupted files allocating too much memory
         if (width < 0 || height < 0 || depth < 0 || depth > 8 || width > 1000 || height > 1000) {
-          reject(new Error(`Corrupted bank file: Invalid dimensions for sprite/icon ${i + 1} (width: ${width}, height: ${height}, depth: ${depth}).`));
+          reject(
+            new Error(
+              `Corrupted bank file: Invalid dimensions for sprite/icon ${i + 1} (width: ${width}, height: ${height}, depth: ${depth}).`,
+            ),
+          );
           return;
         }
 
         const dataSize = width * 2 * height * depth; // Ensure this calculation is correct
 
         if (offset + 10 + dataSize > buffer.length) {
-          reject(new Error(`Corrupted bank file: Sprite/icon ${i + 1} data extends beyond the file boundary (needs ${dataSize} bytes, but only ${buffer.length - offset - 10} bytes remain).`));
+          reject(
+            new Error(
+              `Corrupted bank file: Sprite/icon ${i + 1} data extends beyond the file boundary (needs ${dataSize} bytes, but only ${buffer.length - offset - 10} bytes remain).`,
+            ),
+          );
           return;
         }
 
@@ -70,7 +86,11 @@ export async function parseBankFile(file) {
       }
 
       if (offset + 64 > buffer.length) {
-        reject(new Error(`Corrupted bank file: Unexpected end of file while reading color palette (needs 64 bytes, but only ${buffer.length - offset} bytes remain).`));
+        reject(
+          new Error(
+            `Corrupted bank file: Unexpected end of file while reading color palette (needs 64 bytes, but only ${buffer.length - offset} bytes remain).`,
+          ),
+        );
         return;
       }
 
@@ -90,19 +110,19 @@ export async function parseBankFile(file) {
         const blue = color1 & 0xf;
 
         // Convert 4-bit values (0-15) to 8-bit values (0-255) by multiplying by 17
-        const red8 = (red * 17).toString(16).padStart(2, "0");
-        const green8 = (green * 17).toString(16).padStart(2, "0");
-        const blue8 = (blue * 17).toString(16).padStart(2, "0");
+        const red8 = (red * 17).toString(16).padStart(2, '0');
+        const green8 = (green * 17).toString(16).padStart(2, '0');
+        const blue8 = (blue * 17).toString(16).padStart(2, '0');
 
         // Format as HTML color code #RRGGBB
-        const color = "#" + red8 + green8 + blue8;
+        const color = '#' + red8 + green8 + blue8;
         colorPalette.push(color.toUpperCase());
       }
-      
+
       resolve({ sprites: objectsArray, palette: colorPalette });
     };
 
-    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.onerror = () => reject(new Error('Failed to read file'));
     reader.readAsArrayBuffer(file); // Use readAsArrayBuffer for binary data
   });
 }

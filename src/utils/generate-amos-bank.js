@@ -1,6 +1,6 @@
-export function generateAmosBankFile(bankCreator, filename = "AmosBank_test4.abk") {
+export function generateAmosBankFile(bankCreator, filename = 'AmosBank_test4.abk') {
   const { sprites, palette } = bankCreator;
-  const identifier = "AmSp"; // 4-byte identifier for sprites
+  const identifier = 'AmSp'; // 4-byte identifier for sprites
 
   // Create an array to hold the binary data
   let binaryData = [];
@@ -16,8 +16,7 @@ export function generateAmosBankFile(bankCreator, filename = "AmosBank_test4.abk
   binaryData.push(spriteCount & 0xff); // Low byte
   // Add each sprite's data
   sprites.forEach((sprite) => {
-    const { width, height, depth, hotspotX, hotspotY, planarGraphicData } =
-      sprite;
+    const { width, height, depth, hotspotX, hotspotY, planarGraphicData } = sprite;
 
     let object = [];
     // Width and height are each 2 bytes
@@ -36,7 +35,7 @@ export function generateAmosBankFile(bankCreator, filename = "AmosBank_test4.abk
     if (Array.isArray(planarGraphicData)) {
       object.push(...planarGraphicData);
     } else {
-      console.error("planarGraphicData is not an array", planarGraphicData);
+      console.error('planarGraphicData is not an array', planarGraphicData);
     }
 
     binaryData.push(...object);
@@ -68,12 +67,12 @@ export function generateAmosBankFile(bankCreator, filename = "AmosBank_test4.abk
 
   console.log(binaryData);
   const blob = new Blob([new Uint8Array(binaryData)], {
-    type: "application/octet-stream",
+    type: 'application/octet-stream',
   });
   const url = URL.createObjectURL(blob);
 
   // Create a download link
-  const downloadLink = document.createElement("a");
+  const downloadLink = document.createElement('a');
   downloadLink.href = url;
   downloadLink.download = filename;
   downloadLink.click();

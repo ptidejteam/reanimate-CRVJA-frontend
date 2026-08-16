@@ -1,10 +1,4 @@
-export function renderSpritePixels(
-  planarGraphicData,
-  width,
-  height,
-  depth,
-  palette
-) {
+export function renderSpritePixels(planarGraphicData, width, height, depth, palette) {
   const pixels = [];
   const bytesPerRow = width / 8;
 
@@ -14,10 +8,7 @@ export function renderSpritePixels(
 
       // Build colorIndex by combining bits across planes
       for (let plane = 0; plane < depth; plane++) {
-        const byteIndex =
-          y * bytesPerRow +
-          plane * (height * bytesPerRow) +
-          Math.floor(x / 8);
+        const byteIndex = y * bytesPerRow + plane * (height * bytesPerRow) + Math.floor(x / 8);
         const bitPos = 7 - (x % 8);
         const bit = (planarGraphicData[byteIndex] >> bitPos) & 1;
 

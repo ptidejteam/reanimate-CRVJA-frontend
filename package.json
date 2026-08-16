@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "compile-grammar": "cd src/grammar && java -jar ../../antlr-4.13.2-complete.jar -Dlanguage=JavaScript -o generated AMOS.g4"
+    "compile-grammar": "cd src/grammar && java -jar ../../antlr-4.13.2-complete.jar -Dlanguage=JavaScript -o generated AMOS.g4",
+    "format": "prettier --write \"**/*.js\""
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
