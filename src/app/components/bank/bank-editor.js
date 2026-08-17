@@ -1,15 +1,12 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { Sketch } from "@uiw/react-color";
-import { generateAmosBankFile } from "@/src/utils/generate-amos-bank";
-import { parseBankFile } from "@/src/utils/parse-amos-bank";
-import { renderSpritePixels } from "@/src/utils/sprite-renderer";
-import { parseBankFileAPI } from "@/src/services/parse-bank-file";
+'use client';
+import React, { useState, useEffect } from 'react';
+import { Sketch } from '@uiw/react-color';
+import { generateAmosBankFile } from '@/src/utils/generate-amos-bank';
+import { renderSpritePixels } from '@/src/utils/sprite-renderer';
+import { parseBankFile } from '@/src/services/parse-bank-file';
 
 export default function BankEditor({ bankCreator, setBankCreator }) {
-  const [palette, setPalette] = useState(
-    bankCreator.palette || Array(32).fill("#000000")
-  );
+  const [palette, setPalette] = useState(bankCreator.palette || Array(32).fill('#000000'));
   const [sprites, setSprites] = useState(bankCreator.sprites || []);
   const [spriteSelected, setSpriteSelected] = useState(null);
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -23,15 +20,15 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
 
   useEffect(() => {
     const handleMouseUp = () => setIsMouseDown(false);
-    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener('mouseup', handleMouseUp);
     return () => {
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener('mouseup', handleMouseUp);
     };
   }, []);
 
   useEffect(() => {
     if (bankCreator) {
-      setPalette(bankCreator.palette || Array(32).fill("#000000"));
+      setPalette(bankCreator.palette || Array(32).fill('#000000'));
       const newSprites = bankCreator.sprites || [];
       setSprites(newSprites);
       setSpriteSelected((prev) => {
@@ -45,12 +42,20 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
 
   const handleParseBankFile = async (file) => {
     try {
-      const response = await parseBankFileAPI(file);
-      console.log('handleParseBankFile response: ', response);
+      const response = await parseBankFile(file);
+      if (response && response.sprites && response.palette) {
+        setBankCreator((prev) => ({
+          ...prev,
+          sprites: response.sprites,
+          palette: response.palette,
+        }));
+      }
+      return response;
     } catch (error) {
-      console.error('Failed to fetch API: ', error);
+      console.error('Failed to parse bank file via API: ', error);
+      alert(`Failed to load bank file: ${error.message}`);
     }
-  }
+  };
 
   const handlePixelPaint = (index) => {
     if (spriteSelected !== null) {
@@ -64,9 +69,7 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
       for (let plane = 0; plane < selectedSprite.depth; plane++) {
         const bit = (currentColorIndex >> plane) & 1;
         const byteIndex =
-          y * bytesPerRow +
-          plane * (selectedSprite.height * bytesPerRow) +
-          Math.floor(x / 8);
+          y * bytesPerRow + plane * (selectedSprite.height * bytesPerRow) + Math.floor(x / 8);
         const bitPos = 7 - (x % 8);
 
         if (bit) {
@@ -77,7 +80,7 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
       }
 
       const updatedSprites = sprites.map((sprite, i) =>
-        i === spriteSelected ? { ...selectedSprite } : sprite
+        i === spriteSelected ? { ...selectedSprite } : sprite,
       );
       setSprites(updatedSprites);
     }
@@ -90,10 +93,10 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
       setColorPickerPosition({ top: event.clientY, left: event.clientX });
       setShowColorPicker(true);
     } else if (event.button === 0) {
-      console.log("Current color: ", index);
+      console.log('Current color: ', index);
       setCurrentColorIndex(index);
-      console.log("Current color index: ", currentColorIndex);
-      console.log("Current color value: ", palette[currentColorIndex]);
+      console.log('Current color index: ', currentColorIndex);
+      console.log('Current color value: ', palette[currentColorIndex]);
     }
   };
 
@@ -136,9 +139,7 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
       for (let plane = 0; plane < selectedSprite.depth; plane++) {
         const bit = (currentColorIndex >> plane) & 1;
         const byteIndex =
-          y * bytesPerRow +
-          plane * (selectedSprite.height * bytesPerRow) +
-          Math.floor(x / 8);
+          y * bytesPerRow + plane * (selectedSprite.height * bytesPerRow) + Math.floor(x / 8);
         const bitPos = 7 - (x % 8);
 
         if (bit) {
@@ -150,7 +151,7 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
 
       // Update the sprites array with the modified sprite
       const updatedSprites = sprites.map((sprite, i) =>
-        i === spriteSelected ? { ...selectedSprite } : sprite
+        i === spriteSelected ? { ...selectedSprite } : sprite,
       );
       console.log(selectedSprite);
       setSprites(updatedSprites);
@@ -182,8 +183,10 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
         for (let plane = 0; plane < depth; plane++) {
           for (let y = 0; y < Math.min(oldHeight, newHeight); y++) {
             for (let xBytes = 0; xBytes < Math.min(oldBytesPerRow, newBytesPerRow); xBytes++) {
-              const oldByteIndex = y * oldBytesPerRow + plane * (oldHeight * oldBytesPerRow) + xBytes;
-              const newByteIndex = y * newBytesPerRow + plane * (newHeight * newBytesPerRow) + xBytes;
+              const oldByteIndex =
+                y * oldBytesPerRow + plane * (oldHeight * oldBytesPerRow) + xBytes;
+              const newByteIndex =
+                y * newBytesPerRow + plane * (newHeight * newBytesPerRow) + xBytes;
               newPlanarData[newByteIndex] = selectedSprite.planarGraphicData[oldByteIndex] || 0;
             }
           }
@@ -192,7 +195,7 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
 
         console.log(newSprite);
         const updatedSprites = sprites.map((sprite, i) =>
-          i === spriteSelected ? newSprite : sprite
+          i === spriteSelected ? newSprite : sprite,
         );
         setSprites(updatedSprites);
       }
@@ -225,16 +228,16 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
   // Save bank data to local storage
   const saveBankToLocalStorage = () => {
     const bankData = JSON.stringify({ ...bankCreator, sprites, palette });
-    localStorage.setItem("bankCreator", bankData);
+    localStorage.setItem('bankCreator', bankData);
   };
 
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "row",
-        gap: "20%",
-        border: "1px solid red",
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '20%',
+        border: '1px solid red',
       }}
     >
       <div>
@@ -253,48 +256,45 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
             id={`Creator_bankStored1`}
             type="file"
             onChange={async (e) => {
-              setBankCreator({ ...bankCreator, sprites: [], palette: [] });
               if (e.target.files.length > 0) {
                 const file = e.target.files[0];
-                console.log("File selected for bank 1:", file.name);
-                console.log(file);
-                try {
-                  const result = await parseBankFile(file);
-                  setBankCreator({ ...bankCreator, ...result });
-                  handleParseBankFile(file);
-                } catch (err) {
-                  console.error("Failed to load bank:", err);
-                }
+                console.log('File selected for bank 1:', file.name);
+                await handleParseBankFile(file);
               }
             }}
             multiple
           />
         </div>
-        <button onClick={() => saveBankToLocalStorage()}>
-          Save Bank to Local Storage
-        </button>
+        <button onClick={() => saveBankToLocalStorage()}>Save Bank to Local Storage</button>
         <h2>Palette</h2>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          Selected color: 
-<div style={{ height: "30px", marginBottom: "10px", width: "30px", backgroundColor: `${palette[currentColorIndex]}` }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          Selected color:
+          <div
+            style={{
+              height: '30px',
+              marginBottom: '10px',
+              width: '30px',
+              backgroundColor: `${palette[currentColorIndex]}`,
+            }}
+          />
         </div>
         First color below is the transparent background
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(1, 1fr)",
-            gap: "4px",
+            display: 'grid',
+            gridTemplateColumns: 'repeat(1, 1fr)',
+            gap: '4px',
           }}
         >
           {palette.map((color, index) => (
             <div
               key={index}
               style={{
-                width: "30px",
-                height: "30px",
+                width: '30px',
+                height: '30px',
                 backgroundColor: color,
-                border: "1px solid black",
-                cursor: "pointer",
+                border: '1px solid black',
+                cursor: 'pointer',
               }}
               onClick={(event) => handleColorClick(index, event)}
               onContextMenu={(event) => handleColorClick(index, event)}
@@ -306,7 +306,7 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
         {showColorPicker && (
           <div
             style={{
-              position: "absolute",
+              position: 'absolute',
               top: colorPickerPosition.top,
               left: colorPickerPosition.left,
               zIndex: 1000,
@@ -337,11 +337,11 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
             type="number"
             step="16"
             min="16"
-            value={spriteSelected !== null ? sprites[spriteSelected].width * 16 : ""}
+            value={spriteSelected !== null ? sprites[spriteSelected].width * 16 : ''}
             onChange={(e) => {
               const val = Number(e.target.value);
               if (!isNaN(val) && val >= 16 && val % 16 === 0) {
-                updateSpriteSize("width", val / 16);
+                updateSpriteSize('width', val / 16);
               }
             }}
           />
@@ -351,10 +351,8 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
           <input
             type="number"
             min="1"
-            value={
-              spriteSelected !== null ? sprites[spriteSelected].height : ""
-            }
-            onChange={(e) => updateSpriteSize("height", e.target.value)}
+            value={spriteSelected !== null ? sprites[spriteSelected].height : ''}
+            onChange={(e) => updateSpriteSize('height', e.target.value)}
           />
         </div>
         <div>
@@ -380,10 +378,9 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
         {spriteSelected !== null && (
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${sprites[spriteSelected].width * 16
-                }, 20px)`,
-              gap: "1px",
+              display: 'grid',
+              gridTemplateColumns: `repeat(${sprites[spriteSelected].width * 16}, 20px)`,
+              gap: '1px',
             }}
           >
             {renderSpritePixels(
@@ -391,16 +388,16 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
               sprites[spriteSelected].width * 16,
               sprites[spriteSelected].height,
               sprites[spriteSelected].depth,
-              palette
+              palette,
             ).map((color, index) => (
               <div
                 key={index}
                 style={{
-                  width: "20px",
-                  height: "20px",
+                  width: '20px',
+                  height: '20px',
                   backgroundColor: color,
-                  border: "1px solid #ccc",
-                  cursor: "pointer",
+                  border: '1px solid #ccc',
+                  cursor: 'pointer',
                 }}
                 onClick={() => handlePixelClick(index)}
                 onMouseDown={() => {
@@ -423,35 +420,34 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
         <button onClick={addNewSprite}>Add New Sprite</button>
         <button
           onClick={() => {
-            localStorage.removeItem("bankCreator");
+            localStorage.removeItem('bankCreator');
             setSpriteSelected(null);
-            setBankCreator({ sprites: [], palette: Array(32).fill("#000000") });
+            setBankCreator({ sprites: [], palette: Array(32).fill('#000000') });
             setSprites([]);
-            setPalette(Array(32).fill("#000000"));
-
+            setPalette(Array(32).fill('#000000'));
           }}
           style={{
-            marginTop: "10px",
-            backgroundColor: "#FF6961",
-            color: "#FFF",
+            marginTop: '10px',
+            backgroundColor: '#FF6961',
+            color: '#FFF',
           }}
         >
           Clear Bank
         </button>
         <div
           style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "4px",
-            marginTop: "10px",
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '4px',
+            marginTop: '10px',
           }}
         >
           <div
             style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "4px",
-              marginTop: "10px",
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '4px',
+              marginTop: '10px',
             }}
           >
             {sprites.map((sprite, index) => {
@@ -461,7 +457,7 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
                 width,
                 sprite.height,
                 sprite.depth,
-                palette
+                palette,
               );
 
               return (
@@ -479,14 +475,11 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
                     setSpriteSelected(null);
                   }}
                   style={{
-                    width: "40px",
-                    height: "40px",
-                    border:
-                      spriteSelected === index
-                        ? "2px solid blue"
-                        : "1px solid black",
-                    cursor: "pointer",
-                    display: "grid",
+                    width: '40px',
+                    height: '40px',
+                    border: spriteSelected === index ? '2px solid blue' : '1px solid black',
+                    cursor: 'pointer',
+                    display: 'grid',
                     gridTemplateColumns: `repeat(${width}, 1fr)`,
                   }}
                 >
@@ -494,10 +487,9 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
                     <div
                       key={pixelIndex}
                       style={{
-                        width: "100%",
-                        height: "100%",
-                        backgroundColor:
-                          color === palette[0] ? "transparent" : color,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: color === palette[0] ? 'transparent' : color,
                       }}
                     />
                   ))}
