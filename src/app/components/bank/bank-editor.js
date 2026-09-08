@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Sketch } from '@uiw/react-color';
-import { generateAmosBankFile } from '@/src/utils/generate-amos-bank';
+import { generateAmosBankFile } from '@/src/services/generate-bank-file';
 import { renderSpritePixels } from '@/src/utils/sprite-renderer';
 import { parseBankFile } from '@/src/services/parse-bank-file';
 
@@ -242,10 +242,10 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
     >
       <div>
         <button
-          onClick={() => {
+          onClick={async () => {
             const currentBank = { ...bankCreator, sprites, palette };
             setBankCreator(currentBank);
-            generateAmosBankFile(currentBank);
+            await generateAmosBankFile(currentBank);
           }}
         >
           GENERATE BANK FILE
