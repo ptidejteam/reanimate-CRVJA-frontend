@@ -2,7 +2,7 @@
 
 Reanimate-CRVJA is a web-based environment that brings retro Amiga AMOS BASIC games and applications to the modern web. It provides an Amiga Workbench-styled UI where users can load, edit, and run AMOS code.
 
-> **Note:** The core AMOS to JavaScript transpiler is no longer in this frontend repository; it has been moved to the [Reanimate-CRVJA Backend](https://github.com/ptidejteam/reanimate-CRVJA-backend). Eventually, the sprite bank decoding logic will also be moved to the backend.
+> **Note:** Compiler and binary-processing operations—including AMOS-to-JavaScript transpilation, binary AMOS detokenization, and sprite-bank parsing/generation—live in the [Reanimate-CRVJA Backend](https://github.com/ptidejteam/reanimate-CRVJA-backend).
 
 ## Getting Started
 
@@ -30,4 +30,4 @@ Reanimate-CRVJA is a web-based environment that brings retro Amiga AMOS BASIC ga
 - **Sandboxed Execution**: Runs the transpiled JavaScript safely within an isolated iframe.
 
 ## How It Works
-The frontend sends your AMOS code to the backend API to be transpiled into JavaScript. Once the transpiled code is returned, the frontend injects it into a sandboxed `iframe`. The frontend provides all necessary polyfills—such as simulating Amiga screens with DOM elements, drawing graphics, mapping keyboard inputs, and playing audio via the Web Audio API—to seamlessly execute the retro game logic.
+The frontend sends AMOS source, binary programs, and sprite banks to the backend APIs for processing. Once transpiled JavaScript is returned, the frontend injects it into a sandboxed `iframe`. The frontend provides all necessary polyfills—such as simulating Amiga screens with DOM elements, drawing graphics, mapping keyboard inputs, and playing audio via the Web Audio API—to seamlessly execute the retro game logic.

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import AMOSDecoder from '@/src/utils/amos-decoder';
 import CodeEditor from '@/src/app/components/cina/code-editor';
 import ActionButton from '@/src/app/components/ui/action-button';
 import SideNavigation from '@/src/app/components/cina/side-navigation';
@@ -8,6 +7,7 @@ import AmosRunner from '@/src/app/components/cina/amos-runner';
 import BankSlotManager from '@/src/app/components/bank/bank-slot-manager';
 import { transpile } from '@/src/services/transpile';
 import VersionSelector from '@/src/app/components/cina/version-selector';
+import { decodeAmosFile } from '@/src/services/decode-amos-file';
 
 export default function CinaIDE(availableTranspilerVersions) {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(true);
@@ -19,14 +19,10 @@ export default function CinaIDE(availableTranspilerVersions) {
   );
   const fileInputRef = useRef();
   const amosFileInputRef = useRef();
-  const amosDecoderRef = useRef();
-  const [decodedText, setDecodedText] = useState('');
+  const [isDecodingAmos, setIsDecodingAmos] = useState(false);
+  const [amosDecodeError, setAmosDecodeError] = useState('');
   const [translatedCode, setTranslatedCode] = useState('');
   const [runNonce, setRunNonce] = useState(0);
-
-  useEffect(() => {
-    setAmosCode(decodedText);
-  }, [decodedText]);
 
   useEffect(() => {
     setTranslatedCode(translatedCode);
@@ -48,6 +44,23 @@ export default function CinaIDE(availableTranspilerVersions) {
     };
 
     reader.readAsText(file);
+  };
+
+  const handleAmosFileUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsDecodingAmos(true);
+    setAmosDecodeError('');
+    try {
+      setAmosCode(await decodeAmosFile(file));
+    } catch (error) {
+      console.error('Failed to decode AMOS file:', error);
+      setAmosDecodeError(error.message || 'Unable to decode the selected AMOS file.');
+    } finally {
+      setIsDecodingAmos(false);
+      event.target.value = '';
+    }
   };
 
   const clearBanks = () => {
@@ -157,24 +170,28 @@ export default function CinaIDE(availableTranspilerVersions) {
                   ref={fileInputRef}
                   onChange={handleFileUpload}
                   style={{ display: 'none' }}
-                  accept=".asc, .txt, .amo"
+                  accept=".asc,.txt"
                 />
 
                 <ActionButton
                   icon="/icons/upload-button.png"
+                  disabled={isDecodingAmos}
                   onClick={() => amosFileInputRef.current?.click()}
                 >
-                  Load .AMOS
+                  {isDecodingAmos ? 'Decoding…' : 'Load .AMOS'}
                 </ActionButton>
                 <input
                   type="file"
                   ref={amosFileInputRef}
-                  onChange={(e) => amosDecoderRef.current?.handleFile(e.target.files[0])}
+                  onChange={handleAmosFileUpload}
                   style={{ display: 'none' }}
-                  accept=".amos,.AMOS"
+                  accept=".amos,.AMOS,.amo,.AMO"
                 />
-
-                <AMOSDecoder ref={amosDecoderRef} onDecoded={(text) => setDecodedText(text)} />
+                {amosDecodeError && (
+                  <span role="alert" style={{ color: '#8B0000' }}>
+                    {amosDecodeError}
+                  </span>
+                )}
 
                 <ActionButton
                   icon="/icons/download-button.png"
