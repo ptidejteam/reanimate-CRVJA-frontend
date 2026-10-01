@@ -22,6 +22,7 @@ export default function CinaIDE(availableTranspilerVersions) {
   const [isDecodingAmos, setIsDecodingAmos] = useState(false);
   const [amosDecodeError, setAmosDecodeError] = useState('');
   const [translatedCode, setTranslatedCode] = useState('');
+  const [parseErrors, setParseErrors] = useState([]);
   const [runNonce, setRunNonce] = useState(0);
 
   useEffect(() => {
@@ -87,11 +88,15 @@ export default function CinaIDE(availableTranspilerVersions) {
       };
 
       const response = await transpile(body);
-
       const { lexicalErrors, syntaxErrors, translatedCode: resTranslatedCode } = response.data;
-
+    
       setTranslatedCode(resTranslatedCode);
-      console.log('translatedCode: ', resTranslatedCode);
+      setParseErrors([...lexicalErrors.errors, ...syntaxErrors.errors]);
+
+      console.log(lexicalErrors);
+      console.log(syntaxErrors);
+      console.log(parseErrors);
+      console.log(resTranslatedCode);
     } catch (error) {
       console.error('Failed to fetch API: ', error);
     }
@@ -247,6 +252,7 @@ export default function CinaIDE(availableTranspilerVersions) {
                 </div>
                 <CodeEditor
                   value={AmosCode}
+                  errors={parseErrors}
                   onChange={setAmosCode}
                   style={{
                     width: '44vw',

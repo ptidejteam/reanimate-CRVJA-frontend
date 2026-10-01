@@ -17,7 +17,7 @@ export default function CodeEditor({
 
   const [tip, setTip] = React.useState(null);
   const cursorPos = (e) => ({ x: e.clientX + 12, y: e.clientY + 12 });
-  // ❶ Error lookup: line -> Map<col,msg>
+  // Error lookup: line -> Map<col,msg>
   const byLine = React.useMemo(() => {
     const map = new Map();
     for (const e of errors || []) {
@@ -33,7 +33,7 @@ export default function CodeEditor({
     return map;
   }, [errors]);
 
-  // ❷ Expand tabs only for the overlay; textarea keeps real tabs
+  // Expand tabs only for the overlay; textarea keeps real tabs
   const expandTabs = React.useCallback(
     (s) => {
       if (!s || !s.includes('\t')) return s ?? '';
@@ -43,7 +43,7 @@ export default function CodeEditor({
     [tabColumns],
   );
 
-  // ❸ Compute absolute string index from (line, col) for caret placement
+  // Compute absolute string index from (line, col) for caret placement
   const indexFromLineCol = React.useCallback((src, lineOneBased, colZeroBased) => {
     const lines = src.split('\n');
     const li = Math.max(0, Math.min(lines.length - 1, lineOneBased - 1));
@@ -52,7 +52,7 @@ export default function CodeEditor({
     return idx + Math.max(0, Math.min(colZeroBased, lines[li].length));
   }, []);
 
-  // ❹ Render overlay (no own scroll; we translate inside)
+  // Render overlay (no own scroll; we translate inside)
   const renderHighlights = React.useMemo(() => {
     const lines = expandTabs(value ?? '').split('\n');
     return lines.map((ln, i) => {
@@ -115,13 +115,13 @@ export default function CodeEditor({
     });
   }, [value, byLine, expandTabs, indexFromLineCol]);
 
-  // ❺ Translate overlay to match textarea scroll, with a small vertical fix
+  // Translate overlay to match textarea scroll, with a small vertical fix
   React.useLayoutEffect(() => {
     const ta = taRef.current;
     const inner = innerRef.current;
     if (!ta || !inner) return;
 
-    const Y_ADJUST = -5; // ← move overlay UP by 5px; tweak if you change font/lineHeight
+    const Y_ADJUST = -5; // move overlay UP by 5px; tweak if you change font/lineHeight
 
     const sync = () => {
       inner.style.transform = `translate(${-ta.scrollLeft}px, ${-ta.scrollTop + Y_ADJUST}px)`;
@@ -158,7 +158,7 @@ export default function CodeEditor({
     ...metrics,
     color: 'transparent',
     whiteSpace: 'pre',
-    pointerEvents: 'none', // ← allow click-through by default
+    pointerEvents: 'none', // allow click-through by default
   };
 
   const overlayInnerStyle = {
@@ -187,7 +187,7 @@ export default function CodeEditor({
   };
 
   const tooltipStyle = tip && {
-    position: 'fixed', // ← fixed to the viewport, unaffected by scroll
+    position: 'fixed', // fixed to the viewport, unaffected by scroll
     left: tip.x,
     top: tip.y,
     background: '#111',
@@ -248,7 +248,7 @@ export default function CodeEditor({
           color: transparent;
           border-radius: 2px;
           outline: 1px solid rgba(255,0,0,0.8);
-          pointer-events: auto;   /* ← active over errors only */
+          pointer-events: auto;   /* active over errors only */
           cursor: text;
         }
         .err-line.line-soft {
