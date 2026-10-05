@@ -1,0 +1,505 @@
+.editor {
+  --teal: #00aaaa;
+  --teal-dark: #006666;
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  height: calc(100% - 20px);
+  min-height: 480px;
+  color: #202020;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.editor *,
+.editor *::before,
+.editor *::after {
+  box-sizing: border-box;
+}
+
+.surface {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 2px 10px;
+  border-bottom: 1px solid #888;
+}
+
+.editor :global(.action-button) {
+  min-height: 32px;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.editor :global(.action-button):disabled {
+  background: #bcbcbc;
+  border-color: #888;
+  color: #555;
+  box-shadow: 2px 2px 0 #999;
+  text-shadow: none;
+  cursor: default;
+  transform: none;
+}
+
+.editor button:focus-visible,
+.editor input:focus-visible,
+.canvasViewport:focus-visible {
+  outline: 2px solid #003c98;
+  outline-offset: 2px;
+}
+
+.bankCount {
+  margin-left: auto;
+  color: #444;
+  padding: 2px;
+}
+
+.fileInput {
+  display: none;
+}
+
+.feedback {
+  flex: none;
+  min-height: 34px;
+  padding: 8px 2px;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+  color: #285454;
+}
+
+.error {
+  color: #8b0000;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 220px;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: #d6d6d6;
+  border: 1px solid #888;
+  box-shadow:
+    inset 1px 1px #fff,
+    1px 1px #777;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #999;
+  background: #c9c9c9;
+}
+
+.panelHeader h2,
+.pickerHeader h2 {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.panelHeader > span {
+  font-size: 10px;
+  color: #444;
+}
+
+.panelBody {
+  padding: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.panelBody,
+.canvasViewport,
+.picker {
+  scrollbar-width: auto;
+  scrollbar-color: #888 #ccc;
+}
+
+.editor .panelBody::-webkit-scrollbar,
+.editor .canvasViewport::-webkit-scrollbar,
+.editor .picker::-webkit-scrollbar {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+.editor .panelBody::-webkit-scrollbar-track,
+.editor .canvasViewport::-webkit-scrollbar-track,
+.editor .picker::-webkit-scrollbar-track {
+  background: #ccc;
+}
+
+.editor .panelBody::-webkit-scrollbar-thumb,
+.editor .canvasViewport::-webkit-scrollbar-thumb,
+.editor .picker::-webkit-scrollbar-thumb {
+  background: #999;
+  border: 2px solid #ccc;
+}
+
+.currentColor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.colorSample,
+.swatch {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #666;
+  flex-shrink: 0;
+}
+
+.colorValue {
+  display: block;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.paletteGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 40px);
+  gap: 2px 8px;
+  margin-bottom: 10px;
+}
+
+.swatchButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.swatchIndex {
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.editor .selected {
+  border-color: var(--teal-dark);
+  background-color: #e0f7f7;
+  box-shadow: 0 0 0 1px var(--teal);
+}
+
+.editor .swatchButton.selected {
+  outline: 2px solid var(--teal-dark);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+.swatchButton:hover,
+.thumbnail:hover {
+  background-color: #e0eeee;
+}
+.swatchButton:disabled,
+.thumbnail:disabled {
+  cursor: default;
+}
+
+.transparentMark {
+  display: inline-block;
+  margin: 6px;
+  background: #eee;
+  color: #333;
+  font-size: 11px;
+  line-height: 16px;
+  width: 16px;
+}
+
+.checkerboard {
+  background-color: #eee;
+  background-image: conic-gradient(#bbb 25%, #eee 0 50%, #bbb 0 75%, #eee 0);
+  background-size: 12px 12px;
+}
+
+.hint {
+  margin: 8px 0 0;
+  color: #444;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.dimensions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.field label {
+  font-size: 11px;
+}
+.field input {
+  width: 86px;
+  height: 30px;
+  border: 2px solid #888;
+  border-bottom-color: #fff;
+  border-right-color: #fff;
+  border-radius: 0;
+  background: #fff;
+  color: #202020;
+  font-size: 12px;
+  padding: 4px;
+}
+
+.field input:disabled {
+  background: #ccc;
+}
+
+.canvasViewport {
+  flex: 1;
+  min-height: 180px;
+  min-width: 0;
+  margin: 0 12px;
+  padding: 12px;
+  overflow: auto;
+  background: #a8a8a8;
+  border: 2px solid #888;
+  border-bottom-color: #eee;
+  border-right-color: #eee;
+}
+
+.pixelGrid {
+  display: grid;
+  grid-auto-rows: 20px;
+  gap: 1px;
+  width: max-content;
+  margin: 0 auto;
+  user-select: none;
+}
+
+.pixel {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ccc;
+  cursor: crosshair;
+}
+.pixel:hover {
+  outline: 1px solid #fff;
+  outline-offset: -2px;
+}
+.canvasFooter {
+  padding: 10px 12px;
+  font-size: 10px;
+  color: #444;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  height: 100%;
+  padding: 12px;
+  text-align: center;
+  color: #333;
+}
+
+.emptyState p {
+  max-width: 320px;
+  line-height: 1.7;
+}
+.spriteActions,
+.dangerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+}
+.spriteActions :global(.action-button),
+.dangerActions :global(.action-button) {
+  width: 100%;
+}
+.dangerActions {
+  border-top: 1px solid #aaa;
+}
+.dangerActions :global(.action-button) {
+  background: #c9c9c9;
+  color: #782d2d;
+  border-color: #888;
+  box-shadow: 2px 2px #777;
+  text-shadow: none;
+}
+
+.spriteList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  align-content: start;
+  gap: 8px;
+}
+
+.spriteList > .hint {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.thumbnail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 6px;
+  background: #eee;
+  color: #202020;
+  border: 2px solid #aaa;
+  cursor: pointer;
+  text-align: left;
+}
+
+.previewStage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 72px;
+  width: 100%;
+}
+.thumbnailPixels {
+  display: grid;
+  flex: none;
+}
+.thumbnailPixels > span {
+  min-width: 0;
+  min-height: 0;
+}
+.thumbnailName,
+.thumbnailSize {
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.thumbnailSize {
+  color: #555;
+}
+
+.pickerOverlay {
+  position: absolute;
+  inset: 0;
+  bottom: auto;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12px;
+  background: rgba(70, 70, 70, 0.45);
+}
+
+.picker {
+  width: 280px;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
+  padding: 12px;
+  background: #d6d6d6;
+  border: 2px solid #fff;
+  border-right-color: #555;
+  border-bottom-color: #555;
+  box-shadow: 3px 3px #444;
+}
+
+.pickerHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.pickerHeader :global(.action-button) {
+  min-width: 70px;
+  margin-left: auto;
+}
+
+.picker input {
+  font-family: monospace;
+}
+
+@container (max-width: 999px) {
+  .surface {
+    height: auto;
+    padding-bottom: 20px;
+  }
+  .layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+    grid-template-rows: 540px auto;
+  }
+  .canvasViewport {
+    max-height: 400px;
+  }
+  .spritesPanel {
+    grid-column: 1 / -1;
+  }
+  .spritesPanel .panelHeader {
+    padding: 6px 12px;
+  }
+  .spriteActions,
+  .dangerActions {
+    padding: 8px 12px;
+  }
+  .spriteActions :global(.action-button),
+  .dangerActions :global(.action-button) {
+    width: auto;
+  }
+  .spriteList {
+    max-height: 160px;
+    flex: none;
+    padding: 8px 12px;
+  }
+}
+
+@container (max-width: 639px) {
+  .surface {
+    height: auto;
+    padding-bottom: 20px;
+  }
+  .layout {
+    display: flex;
+    flex-direction: column;
+  }
+  .paletteBody {
+    overflow: visible;
+  }
+  .canvasViewport {
+    height: 360px;
+    flex: none;
+  }
+  .bankCount {
+    margin-left: 0;
+  }
+  .spriteList {
+    max-height: 240px;
+  }
+}
