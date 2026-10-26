@@ -2,7 +2,7 @@ import antlr4 from 'antlr4';
 import AmosToJavaScriptTranslator from '@/src/transpiler/AmosTranspiler';
 import AMOSParser from '@/src/grammar/generated/AMOSParser';
 import AMOSLexer from '@/src/grammar/generated/AMOSLexer';
-import CollectingErrorListener from '@/src/transpiler/ErrorListener';
+import AmosErrorListener from '@/src/transpiler/ErrorListener';
 
 /**
  * Helper to translate AMOS BASIC code into JavaScript.
@@ -13,14 +13,14 @@ export function translateAmos(amosBasicCode) {
   const chars = new antlr4.InputStream(amosBasicCode);
   const lexer = new AMOSLexer(chars);
 
-  const lexErr = new CollectingErrorListener();
+  const lexErr = new AmosErrorListener();
   lexer.removeErrorListeners();
   lexer.addErrorListener(lexErr);
 
   const tokens = new antlr4.CommonTokenStream(lexer);
   const parser = new AMOSParser(tokens);
 
-  const parseErr = new CollectingErrorListener();
+  const parseErr = new AmosErrorListener();
   parser.removeErrorListeners();
   parser.addErrorListener(parseErr);
 
