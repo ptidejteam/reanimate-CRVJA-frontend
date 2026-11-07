@@ -124,7 +124,6 @@ export default function SideNavigation({
       action: () =>
         loadExample(
           '/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game.asc',
-          // "/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/Game (Adapted to v2.0.0).asc",
           [
             {
               path: '/reanimate26/EscapeFromReanimate_Kotowicz_Maher_Abdalla_Ullmann/AmosBank_Escape1.abk',
@@ -145,7 +144,7 @@ export default function SideNavigation({
       action: () =>
         loadExample(
           '/reanimate26/ParkBedlam_Shifan_Franiczek_Ejaz_Scistri/park_bedlam_v20.asc',
-          // "/reanimate26/ParkBedlam_Shifan_Franiczek_Ejaz_Scistri/park_bedlam_v20 (Adapted to v2.0.0).asc",
+          // "/reanimate26/ParkBedlam_Shifan_Franiczek_Ejaz_Scistri/park_bedlam_v20 (Adapted to v2.0).asc",
           [
             {
               path: '/reanimate26/ParkBedlam_Shifan_Franiczek_Ejaz_Scistri/AleksBank.abk',
@@ -196,7 +195,6 @@ export default function SideNavigation({
       action: () =>
         loadExample(
           '/reanimate26/GalaxyPatrol_Tondorf_Chua_Zongo_Bijani/GalaxyPatrol_TCZB.asc',
-          // "/reanimate26/GalaxyPatrol_Tondorf_Chua_Zongo_Bijani/GalaxyPatrol_TCZB (Adapted to v2.0.0).asc",
           [
             {
               path: '/reanimate26/GalaxyPatrol_Tondorf_Chua_Zongo_Bijani/gjs.abk',

@@ -12,7 +12,7 @@ Each programming lesson also has a **checkpoint**: a complete, runnable `.asc` f
 
 Screenshots show real CRVJA results. Select any image to open it at full size.
 
-> Use transpiler **2.0.0-beta** throughout this guide. Keep `tutorial_bank.abk` selected in **Bank 1** when running the sprite lessons.
+> Use transpiler **2.0** throughout this guide. Keep `tutorial_bank.abk` selected in **Bank 1** when running the sprite lessons.
 
 ## Lesson 1 — Bring sprites in from your computer
 
@@ -21,11 +21,11 @@ Screenshots show real CRVJA results. Select any image to open it at full size.
 ### Open the code editor
 
 1. Double-click **CINA** on the CRVJA desktop.
-2. Set **Version** to **2.0.0-beta**.
+2. Set **Version** to **2.0**.
 3. Locate **Load .ASC**, **Save .ASC**, and **Run Code**. The editor is on the left; **Program Screen** is on the right.
 4. Close the examples sidebar with **Menu** if you need more room.
 
-![CINA toolbar showing Load .ASC, Save .ASC, Run Code, and Version 2.0.0-beta](/docs/tutorial/01-cina-version.png)
+![CINA toolbar showing Load .ASC, Save .ASC, Run Code, and Version 2.0](/docs/tutorial/01-cina-version.png)
 
 *Use Run Code after changing a program. Later, click inside Program Screen before using the movement keys.*
 
@@ -442,8 +442,8 @@ End If
 ## Save, restart, and troubleshoot
 
 - **Save your changes:** use **Save .ASC** in CINA. Your downloaded file contains the current editor text.
-- **Start the same lesson again:** save any changes you want to keep, refresh CRVJA, reopen CINA, choose `2.0.0-beta`, select the bank in Bank 1, and use **Load .ASC** for your lesson file. Then press **Run Code**.
-- **No sprites:** check Bank 1 contains `tutorial_bank.abk`, the code loads that name, and the selected version is `2.0.0-beta`.
+- **Start the same lesson again:** save any changes you want to keep, refresh CRVJA, reopen CINA, choose `2.0`, select the bank in Bank 1, and use **Load .ASC** for your lesson file. Then press **Run Code**.
+- **No sprites:** check Bank 1 contains `tutorial_bank.abk`, the code loads that name, and the selected version is `2.0`.
 - **Keys do nothing:** click inside **Program Screen**, then use WASD. Clicking the code editor sends typing there instead.
 - **An error is highlighted:** compare your code with the checkpoint. Check commas, quotation marks, `End If`, `Loop`, and `End Proc`.
 - **An item disappeared:** that is expected during its five-second cooldown. It returns on the other side; movement should continue.
