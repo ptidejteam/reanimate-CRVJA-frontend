@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CodeEditor from '@/src/app/components/cina/code-editor';
 import ActionButton from '@/src/app/components/ui/action-button';
 import SideNavigation from '@/src/app/components/cina/side-navigation';
@@ -8,6 +8,7 @@ import BankSlotManager from '@/src/app/components/bank/bank-slot-manager';
 import { transpile } from '@/src/services/transpile';
 import VersionSelector from '@/src/app/components/cina/version-selector';
 import { decodeAmosFile } from '@/src/services/decode-amos-file';
+import styles from './cina-ide.module.css';
 
 export default function CinaIDE(availableTranspilerVersions) {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(true);
@@ -24,6 +25,77 @@ export default function CinaIDE(availableTranspilerVersions) {
   const [translatedCode, setTranslatedCode] = useState('');
   const [parseErrors, setParseErrors] = useState([]);
   const [runNonce, setRunNonce] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const fullscreenButtonRef = useRef(null);
+  const exitFullscreenRef = useRef(null);
+  const programScreenRef = useRef(null);
+  const programStageRef = useRef(null);
+  const restoreFocusRef = useRef(false);
+
+  const handleFullscreenKey = useCallback(
+    (event) => {
+      const isToggle = event.shiftKey && event.key === 'F1';
+      const isExit = event.key === 'Escape' && isFullscreen;
+      if (!isToggle && !isExit) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.repeat) return;
+
+      setIsFullscreen((open) => isToggle && !open);
+    },
+    [isFullscreen],
+  );
+
+  useLayoutEffect(() => {
+    window.addEventListener('keydown', handleFullscreenKey, true);
+    return () => window.removeEventListener('keydown', handleFullscreenKey, true);
+  }, [handleFullscreenKey]);
+
+  useLayoutEffect(() => {
+    if (!isFullscreen) {
+      if (restoreFocusRef.current) {
+        fullscreenButtonRef.current?.focus({ preventScroll: true });
+        restoreFocusRef.current = false;
+      }
+      return;
+    }
+
+    const panel = programScreenRef.current;
+    const stage = programStageRef.current;
+    const output = stage.firstElementChild;
+
+    if (panel.showPopover) {
+      panel.setAttribute('popover', 'manual');
+      panel.showPopover();
+    }
+
+    const fitOutput = () => {
+      const width = output.offsetWidth;
+      const height = output.offsetHeight;
+      const scale =
+        width && height ? Math.min(stage.clientWidth / width, stage.clientHeight / height) : 1;
+      stage.style.setProperty('--program-scale', scale);
+    };
+    const resizeObserver = new ResizeObserver(fitOutput);
+    resizeObserver.observe(stage);
+    resizeObserver.observe(output);
+    fitOutput();
+
+    const keepFocusInPanel = (event) => {
+      if (!panel.contains(event.target)) exitFullscreenRef.current?.focus({ preventScroll: true });
+    };
+    document.addEventListener('focusin', keepFocusInPanel);
+    exitFullscreenRef.current.focus({ preventScroll: true });
+    restoreFocusRef.current = true;
+
+    return () => {
+      resizeObserver.disconnect();
+      stage.style.removeProperty('--program-scale');
+      document.removeEventListener('focusin', keepFocusInPanel);
+      panel.removeAttribute('popover');
+    };
+  }, [isFullscreen]);
 
   useEffect(() => {
     setTranslatedCode(translatedCode);
@@ -212,6 +284,17 @@ export default function CinaIDE(availableTranspilerVersions) {
                   Run Code
                 </ActionButton>
 
+                <ActionButton
+                  ref={fullscreenButtonRef}
+                  type="button"
+                  icon="/icons/full-screen.png"
+                  aria-haspopup="dialog"
+                  aria-keyshortcuts="Shift+F1"
+                  onClick={() => setIsFullscreen(true)}
+                >
+                  Full Screen
+                </ActionButton>
+
                 <VersionSelector
                   value={transpilerVersion}
                   availableVersions={availableTranspilerVersions}
@@ -239,6 +322,7 @@ export default function CinaIDE(availableTranspilerVersions) {
                   flexDirection: 'column',
                   minHeight: '80vh',
                   alignItems: 'center',
+                  visibility: isFullscreen ? 'hidden' : undefined,
                 }}
               >
                 <div
@@ -261,19 +345,40 @@ export default function CinaIDE(availableTranspilerVersions) {
                   }}
                 />
               </div>
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  maxHeight: 'fit-content',
-                  alignItems: 'center',
-                  marginBottom: '100px',
-                }}
+              <section
+                ref={programScreenRef}
+                className={
+                  isFullscreen ? `${styles.programScreen} ${styles.fullscreen}` : styles.programScreen
+                }
+                role={isFullscreen ? 'dialog' : undefined}
+                aria-modal={isFullscreen ? true : undefined}
+                aria-label="Program Screen"
               >
-                <label htmlFor="amos-code"> Program Screen </label>
-                <AmosRunner jsCode={translatedCode} runNonce={runNonce} bankFiles={bankFiles} />
-              </div>
+                {isFullscreen ? (
+                  <header className={styles.fullscreenBar}>
+                    <button
+                      ref={exitFullscreenRef}
+                      type="button"
+                      className={styles.exitFullscreen}
+                      aria-label="Exit fullscreen"
+                      onClick={() => setIsFullscreen(false)}
+                    >
+                      <img src="/icons/close-button.png" alt="" width="20" height="20" />
+                    </button>
+                    <span>Program Screen</span>
+                  </header>
+                ) : (
+                  <span>Program Screen</span>
+                )}
+                <div ref={programStageRef} className={styles.programStage}>
+                  <AmosRunner
+                    jsCode={translatedCode}
+                    runNonce={runNonce}
+                    bankFiles={bankFiles}
+                    onKeyDown={handleFullscreenKey}
+                  />
+                </div>
+              </section>
             </div>
             &nbsp;
             <BankSlotManager

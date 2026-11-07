@@ -592,7 +592,12 @@ export default function BankEditor({ bankCreator, setBankCreator }) {
           >
             <div className={styles.pickerHeader}>
               <h2 id="color-picker-heading">Edit Color {selectedColorIndex}</h2>
-              <ActionButton onClick={() => setShowColorPicker(false)}>Close</ActionButton>
+              <ActionButton
+                icon="/icons/close-button.png"
+                onClick={() => setShowColorPicker(false)}
+              >
+                Close
+              </ActionButton>
             </div>
             <Sketch color={palette[selectedColorIndex]} onChange={handleColorChange} />
             <p className={styles.hint}>Changes update the palette. Save Bank to keep them.</p>

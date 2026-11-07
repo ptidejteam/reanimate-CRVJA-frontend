@@ -1,0 +1,74 @@
+.programScreen {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  max-height: fit-content;
+  align-items: center;
+  margin-bottom: 100px;
+}
+
+.programStage iframe {
+  margin-top: 10px;
+}
+
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  align-items: stretch;
+  background: #d6d6d6;
+  color: black;
+}
+
+/* Keep the fixed panel above sibling windows when the Popover API is unavailable. */
+:global([data-workbench-window]):has(.fullscreen) {
+  z-index: 2147483647 !important;
+}
+
+.fullscreenBar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #c0c0c0;
+  border-bottom: 2px solid black;
+}
+
+.exitFullscreen {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: #c0c0c0;
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.fullscreen .programStage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fullscreen .programStage > :global(#game-container) {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max-content;
+  transform: translate(-50%, -50%) scale(var(--program-scale, 1));
+}
+
+.fullscreen .programStage iframe {
+  margin-top: 0;
+}

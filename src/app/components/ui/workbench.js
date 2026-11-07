@@ -360,6 +360,7 @@ export function WorkbenchWindow({
   return (
     <div
       ref={windowRef}
+      data-workbench-window
       onMouseDown={bringToFront}
       onMouseMove={drag}
       onMouseUp={stopDrag}
@@ -397,15 +398,18 @@ export function WorkbenchWindow({
         }}
       >
         {/* CLOSE */}
-        <div
+        <button
+          type="button"
+          aria-label={`Close ${title}`}
+          onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => {
             e.stopPropagation();
             onClose();
           }}
           style={{
-            width: 6,
-            height: 10,
-            background: 'white',
+            width: 24,
+            height: 24,
+            padding: 0,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -414,7 +418,9 @@ export function WorkbenchWindow({
             cursor: 'pointer',
             marginRight: '1%',
           }}
-        ></div>
+        >
+          <img src="/icons/close-button.png" alt="" width="18" height="18" />
+        </button>
         <div style={{ height: '100%', borderLeft: '2px solid black' }} />
         <div style={{ height: '100%', borderLeft: '2px solid white' }} />
         <span>{title}</span>

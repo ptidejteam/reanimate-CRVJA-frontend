@@ -1,41 +1,17 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 
-export default function AmosRunner({ jsCode, runNonce, bankFiles }) {
+export default function AmosRunner({ jsCode, runNonce, bankFiles, onKeyDown }) {
   const bankFilesRef = useRef(bankFiles);
+  const onKeyDownRef = useRef(onKeyDown);
 
   useEffect(() => {
     bankFilesRef.current = bankFiles;
   }, [bankFiles]);
-  // Put as full screen toggle on Shift+F1, since F11 is often taken by browsers and you might want an easy way to go fullscreen without it
-  useEffect(() => {
-    const handleKeyDown = async (event) => {
-      if (event.shiftKey && event.key === 'F1') {
-        event.preventDefault();
-        event.stopPropagation();
 
-        const gameContainer = document.getElementById('game-container');
-
-        if (!gameContainer) return;
-
-        try {
-          if (!document.fullscreenElement) {
-            await gameContainer.requestFullscreen();
-          } else {
-            await document.exitFullscreen();
-          }
-        } catch (error) {
-          console.error('Fullscreen error:', error);
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown, true);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown, true);
-    };
-  }, []);
+  useLayoutEffect(() => {
+    onKeyDownRef.current = onKeyDown;
+  }, [onKeyDown]);
 
   useEffect(() => {
     if (!jsCode) return;
@@ -52,12 +28,19 @@ export default function AmosRunner({ jsCode, runNonce, bankFiles }) {
 
     const iframe = document.createElement('iframe');
     iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+    iframe.title = 'Running AMOS program';
     iframe.style.border = '0';
     iframe.style.display = 'block';
     iframe.style.width = '640px'; // initial; iframe will resize itself
     iframe.style.height = '480px';
-    iframe.style.marginTop = '10px';
     host.style.display = 'inline-block';
+
+    // Keyboard events from the runner's same-origin srcdoc do not bubble to the page.
+    const handleFrameKeyDown = (event) => onKeyDownRef.current?.(event);
+    const attachFrameKeyboard = () => {
+      iframe.contentDocument?.addEventListener('keydown', handleFrameKeyDown, true);
+    };
+    iframe.addEventListener('load', attachFrameKeyboard);
 
     // ---- PLAIN JS selector; find the bank file inputs in the PARENT ----
     const forwardBanks = async () => {
@@ -291,6 +274,8 @@ html, body, #game-container, #amos-screen, * { font-family: 'Amiga4Ever', sans-s
     return () => {
       window.removeEventListener('message', onMessage);
       bankInputs.forEach((el) => el.removeEventListener('change', changeHandler));
+      iframe.removeEventListener('load', attachFrameKeyboard);
+      iframe.contentDocument?.removeEventListener('keydown', handleFrameKeyDown, true);
       try {
         iframe.remove();
       } catch {}

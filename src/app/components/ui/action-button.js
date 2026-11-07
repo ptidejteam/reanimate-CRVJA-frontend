@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
-export default function ActionButton({ children, onClick, style, icon, ...props }) {
+export default forwardRef(function ActionButton({ children, onClick, style, icon, ...props }, ref) {
   return (
-    <button className="action-button" onClick={onClick} style={style} {...props}>
+    <button ref={ref} className="action-button" onClick={onClick} style={style} {...props}>
       <div
         style={{
           display: 'flex',
@@ -18,4 +18,4 @@ export default function ActionButton({ children, onClick, style, icon, ...props 
       </div>
     </button>
   );
-}
+});
