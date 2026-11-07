@@ -219,14 +219,14 @@ Remove the collision-message `If/Else` block from Lesson 5. In its place, use:
 If Sprite Col(1,2 To 2)=-1
   COFFEE_COUNT=COFFEE_COUNT+1
   PLAYER_FACE=3
-  Sprite 2,400,0,0
+  Sprite Off 2
   Sprite 1,PLAYER_X,PLAYER_Y,PLAYER_FACE
 End If
 ```
 
 The counter increases by one. Image `3` gives the player Energy Face, while sprite ID `1` and its coordinates stay the same.
 
-X=`400` is beyond the 320-pixel screen. Moving coffee there makes it disappear, so holding the player at the old position cannot keep collecting it. At this stage, coffee stays hidden until you start the lesson again.
+`Sprite Off 2` hides coffee by its sprite instance ID, `2`. `Sprite Col` skips hidden sprites, so holding the player at the pickup spot leaves the counter at one. At this stage, coffee stays hidden until you start the lesson again.
 
 After this pickup block, still inside the loop, add the counter display:
 
@@ -268,7 +268,7 @@ If COFFEE_READY_AT=0
     COFFEE_COUNT=COFFEE_COUNT+1
     PLAYER_FACE=3
     COFFEE_READY_AT=Timer+250
-    Sprite 2,400,0,0
+    Sprite Off 2
     Sprite 1,PLAYER_X,PLAYER_Y,PLAYER_FACE
   End If
 End If
@@ -286,7 +286,7 @@ If COFFEE_READY_AT>0
 End If
 ```
 
-`>` means greater than, and `>=` means greater than or equal to. Once the deadline is reached, coffee alternates from X=`32` to X=`256`, or back again. Its Y position remains `96`.
+`>` means greater than, and `>=` means greater than or equal to. Once the deadline is reached, `Sprite 2` shows the coffee again on the opposite side. Its X position alternates between `32` and `256`, and its Y position stays at `96`.
 
 The loop keeps moving the player and checking the clock. A `Wait 250` at pickup time would instead pause that sequence for five seconds. Here coffee returns on the first game update after its deadline.
 
@@ -328,13 +328,13 @@ If BEER_READY_AT=0
     BEER_COUNT=BEER_COUNT+1
     PLAYER_FACE=4
     BEER_READY_AT=Timer+250
-    Sprite 3,400,0,1
+    Sprite Off 3
     Sprite 1,PLAYER_X,PLAYER_Y,PLAYER_FACE
   End If
 End If
 ```
 
-Beer is instance `3` and bank image `1`. Its pickup selects Crazy Face, image `4`. Its counter and deadline do not replace coffee's values, so both cooldowns can run together.
+Beer is instance `3` and bank image `1`. Its pickup selects Crazy Face, image `4`, and `Sprite Off 3` hides the beer. After five seconds, `Sprite 3` shows it again on the opposite side. Beer has its own counter and deadline, so both cooldowns can run together.
 
 The face records the **latest pickup**: coffee selects Energy Face; beer selects Crazy Face. Movement always uses the same coordinates and speed. There is no three-item ending yet; that comes in Lesson 10.
 

@@ -1,2 +1,5 @@
 - Full screen button
 - CRVJA with Amiga themes
+- Button for stopping the execution of the code
+- Sprite index on Sprite Editor is different from the one used in the code (Sprite Editor starts at 0, code starts at 1)
+- Implement SPRITE OFF
