@@ -1,0 +1,194 @@
+.viewport {
+  height: 100%;
+  min-width: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 32px;
+  background: #fff;
+  color: #202124;
+  user-select: text;
+}
+
+.content {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding-bottom: 48px;
+  font-size: 16px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.content h1,
+.content h2,
+.content h3 {
+  color: #17191a;
+  line-height: 1.4;
+}
+
+.content h1 {
+  margin: 0 0 24px;
+  font-size: 30px;
+}
+
+.content h2 {
+  margin: 48px 0 20px;
+  padding-top: 24px;
+  border-top: 2px solid #e4e9e9;
+  font-size: 22px;
+}
+
+.content h3 {
+  margin: 32px 0 16px;
+  font-size: 18px;
+}
+
+.content p {
+  margin: 0 0 20px;
+}
+
+.content ul,
+.content ol {
+  margin: 0 0 24px;
+  padding-left: 28px;
+}
+
+.content li {
+  margin: 10px 0;
+  padding-left: 4px;
+}
+
+.content li > p {
+  margin-bottom: 8px;
+}
+
+.content a {
+  color: #00666b;
+  text-underline-offset: 4px;
+}
+
+.content a:focus-visible,
+.codeToolbar button:focus-visible,
+.codeBlock pre:focus-visible {
+  outline: 3px solid #008a91;
+  outline-offset: 4px;
+}
+
+.content :not(pre) > code {
+  padding: 3px 5px;
+  border: 1px solid #dce6e6;
+  border-radius: 3px;
+  background: #f1f6f6;
+  font-size: 0.9em;
+}
+
+.content blockquote {
+  margin: 24px 0;
+  padding: 16px 20px;
+  border-left: 4px solid #00868c;
+  background: #eff7f7;
+}
+
+.content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.codeBlock {
+  margin: 24px 0;
+  overflow: hidden;
+  border: 2px solid #434949;
+  border-radius: 4px;
+  background: #222;
+}
+
+.codeToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #434949;
+  color: #d1dfdf;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.codeToolbar button {
+  flex-shrink: 0;
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 2px solid #006666;
+  background: #00aaaa;
+  color: #fff;
+  box-shadow: 2px 2px 0 #004444;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.codeToolbar button:hover {
+  background: #008f95;
+}
+
+.codeToolbar button:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.codeBlock pre {
+  margin: 0;
+  padding: 20px;
+  overflow-x: auto;
+  color: #b7f7b0;
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre;
+  overflow-wrap: normal;
+  tab-size: 2;
+}
+
+.codeBlock code {
+  font: inherit;
+}
+
+.screenshotLink {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 32px auto 20px;
+}
+
+.screenshotLink img {
+  display: block;
+  box-sizing: border-box;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #cad4d4;
+  border-radius: 4px;
+  box-shadow: 0 3px 12px rgb(0 0 0 / 8%);
+}
+
+.content p:has(.screenshotLink) + p:has(> em:only-child) {
+  margin-top: -8px;
+  margin-bottom: 28px;
+  color: #505b5c;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+@media (max-width: 700px) {
+  .viewport {
+    padding: 20px 16px;
+  }
+
+  .content h1 {
+    font-size: 26px;
+  }
+
+  .content h2 {
+    font-size: 20px;
+  }
+
+  .codeBlock pre {
+    padding: 16px;
+  }
+}

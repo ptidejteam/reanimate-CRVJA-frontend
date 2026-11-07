@@ -97,6 +97,22 @@ export default function SideNavigation({
           '/examples/Example4_Colourful_Text/crvja.txt',
         ),
     },
+    {
+      label: 'Coffee & Beer',
+      description: 'Tutorial game',
+      image: '/docs/tutorial/05-first-sprites.png',
+      action: () =>
+        loadExample(
+          '/examples/Example5_Tutorial_Game/tutorial_game.asc',
+          [
+            {
+              path: '/examples/Example5_Tutorial_Game/tutorial_bank.abk',
+              name: 'tutorial_bank.abk',
+            },
+          ],
+          '/examples/Example5_Tutorial_Game/crvja.txt',
+        ),
+    },
   ];
 
   const reanimate26Examples = [

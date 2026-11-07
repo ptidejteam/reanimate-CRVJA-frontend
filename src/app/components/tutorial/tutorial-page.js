@@ -1,136 +1,97 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import styles from './tutorial-page.module.css';
+
+function CodeBlock({ children }) {
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
+  const code = React.Children.toArray(children).find(React.isValidElement);
+  const text = String(code?.props.children ?? '').replace(/\n$/, '');
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setCopyError(false);
+    } catch {
+      setCopyError(true);
+    }
+  };
+
+  return (
+    <div className={styles.codeBlock}>
+      <div className={styles.codeToolbar}>
+        <span>AMOS BASIC</span>
+        <button type="button" onClick={copy} aria-label="Copy AMOS code">
+          {copyError ? 'Try copying again' : copied ? 'Copied!' : 'Copy'}
+        </button>
+      </div>
+      <pre tabIndex={0} aria-label="AMOS code example">
+        {children}
+      </pre>
+    </div>
+  );
+}
 
 export default function TutorialPage() {
   const [tutorialContent, setTutorialContent] = useState('');
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    if (!tutorialContent) {
-      fetch('/docs/tutorial.md')
-        .then((res) => res.text())
-        .then((text) => setTutorialContent(text))
-        .catch((err) => console.error('Failed to load tutorial', err));
-    }
-  }, [tutorialContent]);
+    const controller = new AbortController();
+    fetch('/docs/tutorial.md', { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error('Unable to load tutorial');
+        return response.text();
+      })
+      .then(setTutorialContent)
+      .catch((error) => {
+        if (error.name !== 'AbortError') setLoadError(true);
+      });
+    return () => controller.abort();
+  }, []);
 
   return (
-    <div
-      style={{
-        padding: '20px',
-        background: '#fff',
-        color: '#000',
-        height: '100%',
-        overflowY: 'auto',
-        boxSizing: 'border-box',
-        userSelect: 'text',
-      }}
-    >
-      <ReactMarkdown
-        components={{
-          code({ node, className, children, ...props }) {
-            const match = /language-(\w+)/.exec(className || '');
-            return match ? (
-              <div
-                style={{
-                  position: 'relative',
-                  marginTop: '10px',
-                  marginBottom: '10px',
-                }}
-              >
-                <button
-                  onClick={() => navigator.clipboard.writeText(String(children).replace(/\n$/, ''))}
-                  style={{
-                    position: 'absolute',
-                    top: '5px',
-                    right: '5px',
-                    padding: '6px 12px',
-                    backgroundColor: '#00aaaa',
-                    color: 'white',
-                    border: '2px solid #006666',
-                    boxShadow: '2px 2px 0 #004444',
-                    cursor: 'pointer',
-                    fontFamily: 'monospace',
-                    fontSize: '12px',
-                    zIndex: 10,
-                  }}
-                  onMouseDown={(e) => {
-                    e.target.style.transform = 'translate(2px, 2px)';
-                    e.target.style.boxShadow = '0 0 0 #004444';
-                  }}
-                  onMouseUp={(e) => {
-                    e.target.style.transform = 'translate(0, 0)';
-                    e.target.style.boxShadow = '2px 2px 0 #004444';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = 'translate(0, 0)';
-                    e.target.style.boxShadow = '2px 2px 0 #004444';
-                  }}
-                >
-                  Copy{' '}
-                </button>{' '}
-                <pre
-                  style={{
-                    backgroundColor: '#222',
-                    color: '#0f0',
-                    padding: '16px',
-                    paddingTop: '36px',
-                    border: '4px solid #444',
-                    overflowX: 'auto',
-                    fontFamily: '"Amiga4Ever", monospace',
-                    userSelect: 'text',
-                    whiteSpace: 'pre-wrap',
-                  }}
-                >
-                  <code
-                    className={className}
-                    {...props}
-                    style={{
-                      userSelect: 'text',
-                    }}
+    <div className={styles.viewport}>
+      <article className={styles.content} aria-label="Coffee and Beer game tutorial">
+        {loadError ? (
+          <p role="alert">The tutorial could not load. Reopen this window to try again.</p>
+        ) : !tutorialContent ? (
+          <p role="status">Loading the tutorial…</p>
+        ) : (
+          <ReactMarkdown
+            components={{
+              a({ node, href, ...props }) {
+                const isCheckpoint = href?.startsWith('/examples/') && /\.(asc|abk)$/.test(href);
+                return <a {...props} href={href} download={isCheckpoint || undefined} />;
+              },
+              pre({ children }) {
+                return <CodeBlock>{children}</CodeBlock>;
+              },
+              code({ node, ...props }) {
+                return <code {...props} />;
+              },
+              img({ node, alt, ...props }) {
+                return (
+                  <a
+                    href={props.src}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.screenshotLink}
+                    aria-label={`Open screenshot: ${alt}`}
+                    title="Open screenshot at full size"
                   >
-                    {' '}
-                    {children}{' '}
-                  </code>{' '}
-                </pre>{' '}
-              </div>
-            ) : (
-              <code
-                className={className}
-                {...props}
-                style={{
-                  backgroundColor: '#eee',
-                  padding: '2px 4px',
-                  borderRadius: '4px',
-                  userSelect: 'text',
-                }}
-              >
-                {' '}
-                {children}{' '}
-              </code>
-            );
-          },
-          img({ node, ...props }) {
-            return (
-              <img
-                {...props}
-                style={{
-                  maxWidth: '100%',
-                  height: 'auto',
-                  display: 'block',
-                  marginTop: '15px',
-                  marginBottom: '15px',
-                  borderRadius: '4px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  border: '1px solid #ccc',
-                }}
-              />
-            );
-          },
-        }}
-      >
-        {tutorialContent}
-      </ReactMarkdown>
+                    <img {...props} alt={alt} loading="lazy" decoding="async" />
+                  </a>
+                );
+              },
+            }}
+          >
+            {tutorialContent}
+          </ReactMarkdown>
+        )}
+      </article>
     </div>
   );
 }
