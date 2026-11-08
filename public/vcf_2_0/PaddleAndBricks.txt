@@ -17,6 +17,7 @@ POS=0
 PREVCOLID=-1
 PADDLE_ID = DIMX*DIMY
 BALL_ID = DIMX*DIMY + 1
+PADDLE_DIRECTION = 0 + 2
 
 BALLX = 300
 BALLY = 300
@@ -25,7 +26,10 @@ BALLVELY = 1
 
 DIM BRICK_TYPES(DIMX * DIMY)
 
-Global DIMX, DIMY, PADDLE_X, PADDLE_Y, MAXX, MAXY, NOBRICK, POS, PREVCOLID, PADDLE_ID, BALL_ID, BRICK_TYPES, BALLX, BALLY, BALLVELX, BALLVELY
+Global DIMX, DIMY, PADDLE_X, PADDLE_Y, MAXX, MAXY, NOBRICK 
+Global POS, PREVCOLID, PADDLE_ID, BALL_ID 
+Global BRICK_TYPES, BALLX, BALLY, BALLVELX, BALLVELY
+Global PADDLE_DIRECTION 
 
 Procedure INIT
     For y = 0 To DIMY-1
@@ -73,23 +77,52 @@ Procedure MOVEBALL
 End Proc
 
 Procedure MOVE_PADLE
+    PADDLE_DIRECTION = 0 + 2 
     If Key State($11)  ' W (up)
     End If
     If Key State($1F)  ' S (down)
     End If
     If Key State($1E)  ' A (left)
-        PADDLE_X=PADDLE_X-1
+        PADDLE_X=PADDLE_X-1/3
+        PADDLE_DIRECTION = -1 + 2
         If PADDLE_X<0
              PADDLE_X=0
         End If
     End If
     If Key State($20)  ' D (right)
-        PADDLE_X = PADDLE_X + 1
-        If PADDLE_X > 39
-            PADDLE_X = 39
+        PADDLE_X = PADDLE_X + 1/3
+        PADDLE_DIRECTION = 1 + 2
+        If PADDLE_X > 38
+            PADDLE_X = 38
         End If
     End If
 End Proc
+
+
+'-1 -> + 2 = 1
+Procedure VELOCITY_UPDATE_RIGHT
+    If BALLVELX > 0
+        BALLVELX = BALLVELX * 2
+    Else
+        BALLVELX = BALLVELX / 2
+    End If
+End Proc
+
+
+'0 -> + 2 = 2
+Procedure VELOCITY_UPDATE_NO_MOVE
+
+End Proc
+
+'1 -> + 2 = 3
+Procedure VELOCITY_UPDATE_LEFT
+    If BALLVELX < 0
+        BALLVELX = BALLVELX * 2
+    Else
+        BALLVELX = BALLVELX / 2
+    End If
+End Proc
+
 
 Procedure GAME_LOOP
     MOVE_PADLE
@@ -102,6 +135,7 @@ Procedure GAME_LOOP
 
     If Sprite Col(BALL_ID, 0 to PADDLE_ID) = -1
         For sprite_id = 0 to PADDLE_ID-1
+            ' Ball and Brick collision 
             If Sprite Col(BALL_ID, sprite_id to sprite_id) = -1 AND sprite_id <> PREVCOLID AND BRICK_TYPES(sprite_id) <> NOBRICK
                 BRICK_TYPES(sprite_id) = BRICK_TYPES(sprite_id) + 1
                 If BRICK_TYPES(sprite_id) = NOBRICK
@@ -112,8 +146,11 @@ Procedure GAME_LOOP
                 PREVCOLID = sprite_id
             End If
         Next
+        ' Paddle and Ball collision
         If Sprite Col(BALL_ID, PADDLE_ID to PADDLE_ID) = -1 AND PADDLE_ID <> PREVCOLID
-            BALLVELX = -BALLVELX
+            
+            On PADDLE_DIRECTION Proc VELOCITY_UPDATE_RIGHT, VELOCITY_UPDATE_NO_MOVE, VELOCITY_UPDATE_LEFT
+         
             BALLVELY = -BALLVELY
             PREVCOLID = PADDLE_ID
         End If
