@@ -98,10 +98,6 @@ export default function CinaIDE(availableTranspilerVersions) {
   }, [isFullscreen]);
 
   useEffect(() => {
-    setTranslatedCode(translatedCode);
-  }, [translatedCode]);
-
-  useEffect(() => {
     if (!transpilerVersion) {
       setTranspilerVersion(availableTranspilerVersions.availableTranspilerVersions[0]);
     }
@@ -148,9 +144,8 @@ export default function CinaIDE(availableTranspilerVersions) {
     });
   };
 
-  const onRunClick = () => {
-    setRunNonce((n) => n + 1);
-  };
+  // Removing the program from the runner clears the Program Screen and ends its loops, timers and sounds.
+  const stopProgram = () => setTranslatedCode('');
 
   const handleTranspile = async () => {
     try {
@@ -161,8 +156,10 @@ export default function CinaIDE(availableTranspilerVersions) {
 
       const response = await transpile(body);
       const { lexicalErrors, syntaxErrors, translatedCode: resTranslatedCode } = response.data;
-    
+
       setTranslatedCode(resTranslatedCode);
+      // A new nonce restarts the runner even when the code is unchanged.
+      setRunNonce((n) => n + 1);
       setParseErrors([...lexicalErrors.errors, ...syntaxErrors.errors]);
 
       console.log(lexicalErrors);
@@ -282,6 +279,14 @@ export default function CinaIDE(availableTranspilerVersions) {
 
                 <ActionButton icon="/icons/play-button.png" onClick={handleTranspile}>
                   Run Code
+                </ActionButton>
+
+                <ActionButton
+                  icon="/icons/stop-button.png"
+                  onClick={stopProgram}
+                  disabled={!translatedCode}
+                >
+                  Stop
                 </ActionButton>
 
                 <ActionButton
