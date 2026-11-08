@@ -1,0 +1,138 @@
+Screen Open 1,640,400,16,Hires
+
+Palette $00A,$000,$FF0,$FF0,$555
+Paper 4
+Cls
+
+Load "PaddleAndBricks2.abk"
+
+DIMX=40
+DIMY=4
+PADDLE_X=10
+PADDLE_Y=22
+MAXX = 630
+MAXY = 390
+NOBRICK = 5
+POS=0
+PREVCOLID=-1
+PADDLE_ID = DIMX*DIMY
+BALL_ID = DIMX*DIMY + 1
+
+BALLX = 300
+BALLY = 300
+BALLVELX = 1
+BALLVELY = 1
+
+DIM BRICK_TYPES(DIMX * DIMY)
+
+Global DIMX, DIMY, PADDLE_X, PADDLE_Y, MAXX, MAXY, NOBRICK, POS, PREVCOLID, PADDLE_ID, BALL_ID, BRICK_TYPES, BALLX, BALLY, BALLVELX, BALLVELY
+
+Procedure INIT
+    For y = 0 To DIMY-1
+        For x = 0 To DIMX-1
+            BRICK_TYPES(y*DIMX + x) = 1+y
+        Next
+    Next
+End Proc
+
+Procedure MY_DRAW
+    For y = 0 To DIMY-1
+        For x = 0 To DIMX-1
+            id=y*DIMX + x
+            brick_type=BRICK_TYPES(id)
+            If brick_type = NOBRICK
+                Sprite Off id
+            Else
+                x_=16*x
+                y_=16*y
+                Sprite id, x_, y_, brick_type
+            End If
+        Next
+    Next
+End Proc
+
+Procedure MOVEBALL
+    BALLX = BALLX + BALLVELX
+    BALLY = BALLY + BALLVELY
+
+    If BALLX <= 0
+        BALLX = 0
+        BALLVELX = -BALLVELX
+    Else If BALLX >= MAXX
+        BALLX = MAXX
+        BALLVELX = -BALLVELX
+    End If
+
+    If BALLY <= 0
+        BALLY = 0
+        BALLVELY = -BALLVELY
+    Else If BALLY >= MAXY
+        BALLY = MAXY
+        BALLVELY = -BALLVELY
+    End If
+End Proc
+
+Procedure MOVE_PADLE
+    If Key State($11)  ' W (up)
+    End If
+    If Key State($1F)  ' S (down)
+    End If
+    If Key State($1E)  ' A (left)
+        PADDLE_X=PADDLE_X-1
+        If PADDLE_X<0
+             PADDLE_X=0
+        End If
+    End If
+    If Key State($20)  ' D (right)
+        PADDLE_X = PADDLE_X + 1
+        If PADDLE_X > 39
+            PADDLE_X = 39
+        End If
+    End If
+End Proc
+
+Procedure GAME_LOOP
+    MOVE_PADLE
+
+    x_=PADDLE_X * 16
+    y_=PADDLE_Y * 16
+    Sprite PADDLE_ID, x_, y_, 0
+
+    MOVEBALL
+
+    If Sprite Col(BALL_ID, 0 to PADDLE_ID) = -1
+        For sprite_id = 0 to PADDLE_ID-1
+            If Sprite Col(BALL_ID, sprite_id to sprite_id) = -1 AND sprite_id <> PREVCOLID AND BRICK_TYPES(sprite_id) <> NOBRICK
+                BRICK_TYPES(sprite_id) = BRICK_TYPES(sprite_id) + 1
+                If BRICK_TYPES(sprite_id) = NOBRICK
+                    Sprite Off sprite_id
+                End If
+                BALLVELX = -BALLVELX
+                BALLVELY = -BALLVELY
+                PREVCOLID = sprite_id
+            End If
+        Next
+        If Sprite Col(BALL_ID, PADDLE_ID to PADDLE_ID) = -1 AND PADDLE_ID <> PREVCOLID
+            BALLVELX = -BALLVELX
+            BALLVELY = -BALLVELY
+            PREVCOLID = PADDLE_ID
+        End If
+        If PREVCOLID <> -1
+            While Sprite Col(BALL_ID, PREVCOLID to PREVCOLID) = -1
+                MOVEBALL
+                Sprite BALL_ID, BALLX, BALLY, 5
+            Wend
+        End If
+        MY_DRAW
+    Else
+        PREVCOLID=-1
+    End if
+
+    Sprite BALL_ID, BALLX, BALLY, 5
+End Proc
+
+INIT
+MY_DRAW
+Do
+    GAME_LOOP
+Loop
