@@ -1,10 +1,12 @@
+' Breakout game in VCF 2.0 (2026)
+' Timéo Klein, Vinicius Mioto, Yann-Gaël Guéhéneuc
 Screen Open 1,640,400,16,Hires
 
 Palette $00A,$000,$FF0,$FF0,$555,$FFF
 Paper 4
 Cls
 
-Load "PaddleAndBricks3.abk"
+Load "breakout.abk"
 
 DIM_X=40
 DIM_Y=4
@@ -89,6 +91,22 @@ Procedure MOVEBALL
     End If
 End Proc
 
+Procedure PADDLE_LEFT
+    PADDLE_X=PADDLE_X-1/3
+    PADDLE_DIRECTION = -1 + 2
+    If PADDLE_X<0
+         PADDLE_X=0
+    End If
+End Proc
+
+Procedure PADDLE_RIGHT
+    PADDLE_X = PADDLE_X + 1/3
+    PADDLE_DIRECTION = 1 + 2
+    If PADDLE_X > 38
+        PADDLE_X = 38
+    End If
+End Proc
+
 Procedure MOVE_PADLE
     PADDLE_DIRECTION = 0 + 2
     If Key State($11)  ' W (up)
@@ -96,18 +114,16 @@ Procedure MOVE_PADLE
     If Key State($1F)  ' S (down)
     End If
     If Key State($1E)  ' A (left)
-        PADDLE_X=PADDLE_X-1/3
-        PADDLE_DIRECTION = -1 + 2
-        If PADDLE_X<0
-             PADDLE_X=0
-        End If
+        PADDLE_LEFT
+    End If
+    If Key State($70)  ' Left arrow
+        PADDLE_LEFT
     End If
     If Key State($20)  ' D (right)
-        PADDLE_X = PADDLE_X + 1/3
-        PADDLE_DIRECTION = 1 + 2
-        If PADDLE_X > 38
-            PADDLE_X = 38
-        End If
+        PADDLE_RIGHT
+    End If
+    If Key State($71)  ' Right arrow
+        PADDLE_RIGHT
     End If
 End Proc
 
@@ -136,6 +152,39 @@ Procedure VELOCITY_UPDATE_LEFT
     End If
 End Proc
 
+' Half of the bounces change the ball direction
+Procedure RANDOM_BOUNCE
+    If Rnd(1) = 0
+        ' Change the x speed by -0.4 to +0.4
+        nudge_x = (Rnd(8) - 4) / 10
+        BALL_VEL_X = BALL_VEL_X + nudge_x
+        ' Do not let the ball go almost straight up and down
+        If BALL_VEL_X > 0 AND BALL_VEL_X < 0.5
+            BALL_VEL_X = 0.5
+        Else If BALL_VEL_X <= 0 AND BALL_VEL_X > -0.5
+            BALL_VEL_X = -0.5
+        End If
+
+        ' Change the y speed by -0.3 to +0.3, but keep it going the same way
+        nudge_y = (Rnd(6) - 3) / 10
+        If BALL_VEL_Y > 0
+            BALL_VEL_Y = BALL_VEL_Y + nudge_y
+            If BALL_VEL_Y < 0.6
+                BALL_VEL_Y = 0.6
+            Else If BALL_VEL_Y > 1.4
+                BALL_VEL_Y = 1.4
+            End If
+        Else
+            BALL_VEL_Y = BALL_VEL_Y - nudge_y
+            If BALL_VEL_Y > -0.6
+                BALL_VEL_Y = -0.6
+            Else If BALL_VEL_Y < -1.4
+                BALL_VEL_Y = -1.4
+            End If
+        End If
+    End If
+End Proc
+
 Procedure CHECK_COLLISIONS
     If Sprite Col(BALL_ID, 0 to PADDLE_ID) = -1
         For sprite_id = 0 to PADDLE_ID-1
@@ -148,6 +197,7 @@ Procedure CHECK_COLLISIONS
                 End If
                 BALL_VEL_X = -BALL_VEL_X
                 BALL_VEL_Y = -BALL_VEL_Y
+                RANDOM_BOUNCE
                 PREV_COL_ID = sprite_id
             End If
         Next
@@ -157,6 +207,7 @@ Procedure CHECK_COLLISIONS
             On PADDLE_DIRECTION Proc VELOCITY_UPDATE_RIGHT, VELOCITY_UPDATE_NO_MOVE, VELOCITY_UPDATE_LEFT
 
             BALL_VEL_Y = -BALL_VEL_Y
+            RANDOM_BOUNCE
             PREV_COL_ID = PADDLE_ID
         End If
         If PREV_COL_ID <> -1
