@@ -222,6 +222,25 @@ export default function SideNavigation({
     },
   ];
 
+  const vcf26Examples = [
+    {
+      label: 'Ali-Tah-Riz 🥇',
+      description: 'Tetriz',
+      image: '/vcf26/AliTahRiz_Bijani_Maher/AliTaRiz.png',
+      action: () =>
+        loadExample(
+          '/vcf26/AliTahRiz_Bijani_Maher/main.asc',
+          [
+            {
+              path: '/vcf26/AliTahRiz_Bijani_Maher/AmosBank_1.abk',
+              name: 'AmosBank_1.abk',
+            },
+          ],
+          '/vcf26/AliTahRiz_Bijani_Maher/crvja.txt',
+        ),
+    },
+  ];
+
   return (
     <div
       ref={ref}
@@ -263,6 +282,36 @@ export default function SideNavigation({
             }}
           >
             {examples.map((ex, index) => (
+              <li key={index}>
+                <FileActionButton
+                  image={ex.image}
+                  title={ex.label}
+                  description={ex.description}
+                  onClick={ex.action}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h4
+            style={{
+              borderBottom: '2px solid #ccc',
+              paddingBottom: '4px',
+              marginBottom: '10px',
+            }}
+          >
+            VCF'26 Games
+          </h4>
+          <ul
+            style={{
+              listStyleType: 'none',
+              padding: 0,
+              margin: 0,
+              width: '100%',
+            }}
+          >
+            {vcf26Examples.map((ex, index) => (
               <li key={index}>
                 <FileActionButton
                   image={ex.image}
