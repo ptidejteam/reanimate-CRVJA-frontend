@@ -224,8 +224,8 @@ export default function SideNavigation({
 
   const vcf26Examples = [
     {
-      label: 'Ali-Tah-Riz 🥇',
-      description: 'Tetriz',
+      label: 'Ali-Tah-Riz',
+      description: 'Inspired on Tetris',
       image: '/vcf26/AliTahRiz_Bijani_Maher/AliTaRiz.png',
       action: () =>
         loadExample(
@@ -237,6 +237,42 @@ export default function SideNavigation({
             },
           ],
           '/vcf26/AliTahRiz_Bijani_Maher/crvja.txt',
+        ),
+    },
+    {
+      label: 'Boulder Crash',
+      description: 'Inspired on Boulder Dash',
+      image: '/vcf26/Boulder_Crash/boulder-dash.png',
+      action: () =>
+        loadExample(
+          '/vcf26/Boulder_Crash/boulder-dash.asc',
+          [
+            {
+              path: '/vcf26/Boulder_Crash/boulder-dash.abk',
+              name: 'boulder-dash.abk',
+            },
+            {
+              path: '/vcf26/Boulder_Crash/Cat.abk',
+              name: 'Cat.abk',
+            },
+          ],
+          '/vcf26/Boulder_Crash/crvja.txt',
+        ),
+    },
+    {
+      label: 'Breaking Out',
+      description: 'Inspired on Breakout',
+      image: '/vcf26/Breaking_Out/breakout.png',
+      action: () =>
+        loadExample(
+          '/vcf26/Breaking_Out/breakout.asc',
+          [
+            {
+              path: '/vcf26/Breaking_Out/breakout.abk',
+              name: 'breakout.abk'
+            },
+          ],
+          '/vcf26/Breaking_Out/crvja.txt',
         ),
     },
   ];
